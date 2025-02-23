@@ -1,0 +1,281 @@
+<template>
+    <div class="container-form">
+
+        <div class="body-content">
+            <div class="">
+                <a-row>
+                    <a-col :span="11">
+                        <h4>{{$t('updatePromotion.includesStore')}}</h4>
+                        <a-divider style="margin: 10px 0 10px 0" />
+                        <a-row :gutter="16">
+                            <a-col :span="12" v-for="(item, index) in includeList" :key="index" >
+                                <a-card class="mt10">
+                                    <a-row :gutter="16">
+                                       <a-col :span="12">
+                                            <div class="inline-block card-title">
+                                                <div class="card-name fl">ID</div>
+                                                <div class="card-desc fl">{{item.segment_id}}</div>
+                                            </div>
+                                        </a-col>
+                                        <a-col :span="12">
+                                            <div class="inline-block card-title">
+                                                <div class="card-name fl">SKU#</div>
+                                                <div class="card-desc fl">{{item.sub_count}}</div>
+                                            </div>
+                                        </a-col>
+                                        <a-col :span="24">
+                                            <div class="inline-block card-title">
+                                                <div class="card-name fl">名称</div>
+                                                <div class="card-desc fl">{{item.name}}</div>
+                                            </div>
+                                        </a-col>
+                                    </a-row>
+                                    <div class="card-delete">
+                                        <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete(index)" class="ml10" />
+                                    </div>
+                                </a-card>
+                            </a-col>
+                            <a-button type="link" v-if="!disabled" @click="showModal(1)">
+                                <template #icon><PlusOutlined /></template>
+                                {{$t('updatePromotion.addStoreSegments')}}
+                            </a-button>
+                        </a-row>
+                    </a-col>
+                    <a-col :span="2" style="text-align: center">
+                        <a-divider style="height: 100%" type="vertical" />
+                    </a-col>
+                    <a-col :span="11">
+                        <h4> {{$t('updatePromotion.excludeStore')}}</h4>
+                        <a-divider style="margin: 10px 0 10px 0" />
+                        <a-card v-for="(item, index) in noIncludeList" :key="index" class="mt10">
+                            <a-row :gutter="16">
+                                <a-col :span="12">
+                                    <div class="inline-block card-title">
+                                        <div class="card-name fl">ID</div>
+                                        <div class="card-desc fl">{{item.segment_id}}</div>
+                                    </div>
+                                </a-col>
+                                <a-col :span="12">
+                                    <div class="inline-block card-title">
+                                        <div class="card-name fl">SKU#</div>
+                                        <div class="card-desc fl">{{item.sub_count}}</div>
+                                    </div>
+                                </a-col>
+                                <a-col :span="24">
+                                    <div class="inline-block card-title">
+                                        <div class="card-name fl">名称</div>
+                                        <div class="card-desc fl">{{item.name}}</div>
+                                    </div>
+                                </a-col>
+                            </a-row>
+                            <div class="card-delete">
+                                <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete(index)" class="ml10" />
+                            </div>
+                        </a-card>
+                        <a-button type="link" v-if="!disabled" @click="showModal(0)">
+                            <template #icon><PlusOutlined /></template>
+                            {{$t('updatePromotion.addStoreSegments')}}
+                        </a-button>
+
+                    </a-col>
+                </a-row>
+            </div>
+             
+            <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.modalTitle')" @ok="handleOk">
+                <a-divider style="margin: 0 0 20px 0" />
+                <div class="flex">
+                    <a-input v-model:value="formState.key_word" :placeholder="$t('updatePromotion.idNameSearch')" >
+                        <template #icon>
+                            <SearchOutlined />
+                        </template>
+                    </a-input>
+
+                    <a-button type="primary" class="ml10">{{$t('updatePromotion.customConditions')}}</a-button>
+                </div>
+
+                <h4 class="mt10">{{$t('updatePromotion.selectedSegments')}}</h4>
+                <a-row class="mt10" :gutter="16">
+                    <a-col class="mt10" :span="12" v-for="(item, index) in dataSource" :key="index">
+                        <a-card :class="item.checked ? 'borderactive' : ''" @click="onClickCard(item, index)" >
+                            <div class="inline-block card-title">
+                                <div class="card-name fl">ID</div>
+                                <div class="card-desc fl">{{item.segment_id}}</div>
+                            </div>
+                            <div class="inline-block card-title">
+                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                <div class="card-desc fl">{{item.name}}</div>
+                            </div>
+                            <div class="inline-block card-title">
+                                <div class="card-name fl">SKU#</div>
+                                <div class="card-desc fl">{{item.sub_count}}</div>
+                            </div>
+                        </a-card>
+                    </a-col>
+                </a-row>
+
+            </a-modal> 
+        </div>
+    </div>
+
+</template>
+
+<script>
+    import { defineComponent, reactive, toRaw, ref, onMounted, defineEmits } from 'vue';
+    import { useRoute } from 'vue-router';
+    import { PlusOutlined, MoreOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons-vue';
+    import { getSegmentsList } from '@/api/segments'
+    const emits = defineEmits(['onEmit'])
+    export default defineComponent({
+        components: {
+            PlusOutlined,
+            MoreOutlined,
+            DeleteOutlined,
+            SearchOutlined
+        },
+        emits: emits,
+        props: {
+            promotionLocationSegments: {
+                type: Array,
+                default: 'default'
+            },
+        },
+        setup(props, { emit }) {
+            const formState = ref({
+                key_word: '',
+                segment_status: 'ALL',
+            });
+            const checkRow = ref({})
+            const type = ref(0)
+            const include = ref(1)
+            let paginationData = ref({
+                page: 1,
+                page_size: 10,
+                total: 0,
+            })
+            const visible = ref(false);
+            const includeList = ref([])
+            const noIncludeList = ref([])
+            const dataSource = ref([])
+            const route = useRoute();
+            const id = Number(route.params.id);
+            const disabled = ref(false)
+            
+
+            onMounted(()=>{
+                setTimeout(()=>{
+                    disabled.value = route.name == 'promotionDetail'
+                    if(id != 0){
+                        showDetail()
+                    }  
+                    init()
+                },1000)
+            })
+
+            const showDetail = () => {
+                if(props.promotionLocationSegments.length > 0){
+                    includeList.value = props.promotionLocationSegments.filter(item => item.include == 1)
+                    noIncludeList.value = props.promotionLocationSegments.filter(item => item.include == 0)
+                }
+            }
+
+            const onDelete = key => {
+                dataSource.value = dataSource.value.filter(item => item.key !== key);
+            };
+            const showModal = (include1) => {
+                visible.value = true;
+                dataSource.value.forEach((item, num) => {
+                    item.checked = false
+                })
+                include.value = include1
+            };
+
+            const handleOk = e => {
+                getTypeList()
+                visible.value = false;
+            };
+
+            const getTypeList = () => {
+                if(include.value == 1){
+                   includeList.value.push(checkRow.value)
+                } else if(include.value == 0){
+                   noIncludeList.value.push(checkRow.value)
+                }
+                onUpdate()
+            }
+
+            const onUpdate = () => {
+                const promotionLocationSegments = includeList.value.concat(noIncludeList.value);
+                emit('onEmit', {
+                    promotion_location_segments:promotionLocationSegments
+                })
+            };
+
+            const init = () => {
+                const data = {
+                     segment_type: 'item',
+                     ...formState.value,
+                     ...paginationData.value
+                }
+                getSegmentsList(data).then(res => {
+                    dataSource.value = res.data
+                    paginationData.value.page = res.page
+                    paginationData.value.page_size = res.page_size
+                    paginationData.value.total = res.total
+                })
+            }
+             const onClickCard = (item, index) => {
+                checkRow.value = item
+                checkRow.value.include = include.value
+                checkRow.value.item_type = type.value
+                dataSource.value.forEach((item, num) => {
+                    if(index == num){
+                        item.checked = !item.checked
+                    } else {
+                        item.checked = false
+                    }
+                })
+            }
+
+            return {
+                formState,
+                visible,
+                MoreOutlined,
+                onDelete,
+                dataSource,
+                noIncludeList,
+                includeList,
+                showModal,
+                handleOk,
+                onClickCard,
+                paginationData,
+                disabled
+            };
+        },
+    });
+
+</script>
+<style>
+    .card-title{
+
+    }
+   .card-name{
+       width: 40px;
+       opacity: 0.6;
+   }
+    .card-desc{
+        width: calc(100% - 40px);
+        color: #181818;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .card-delete{
+        display: none;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
+    .ant-card-bordered:hover .card-delete{
+        display: block;
+    }
+</style>
