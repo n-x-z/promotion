@@ -77,9 +77,18 @@
                   <template #index="{ index, record }">
                      {{index + 1}}
                   </template>
+                  <template #promotion_id="{ index, record }">
+                     <div class="link" @click="onEdit(record.promotion_id)" type="link">{{record.promotion_id}}</div>
+                  </template>
                    <template #name="{ index, record }">
                      <div>{{record.name}}</div>
                      <div class="description">{{record.description}}</div>
+                  </template>
+                  <template #time="{ index, record }">
+                    <a-tag v-if="record.time_stats == '已结束'" color="default">{{record.time_stats}}</a-tag>
+                    <a-tag v-if="record.time_stats == '进行中'" color="green">{{record.time_stats}}</a-tag>
+                     <a-tag v-if="record.time_stats == '未开始'" color="blue">{{record.time_stats}}</a-tag>
+                     <div>{{record.start_date}}~{{record.end_date}}</div>
                   </template>
                   <template #status="{ index, record }">
                       <a-switch @change="e => onChangeSwitch(e, index, record)" :checkedValue="record.promotion_status != 'active' " />
@@ -169,14 +178,27 @@
                 {
                     title: t('table.promotionId'),
                     dataIndex: 'promotion_id',
+                    slots: {
+                        customRender: 'promotion_id',
+                    },
                 },
                 {
                     title: t('table.promotionName'),
                     dataIndex: 'name',
+                    slots: {
+                        customRender: 'name',
+                    },
                 },
                 {
                     title: t('table.type'),
                     dataIndex: 'promotion_type',
+                },
+                {
+                    title: t('table.startingTime'),
+                    dataIndex: 'time',
+                    slots: {
+                        customRender: 'time',
+                    },
                 },
                 {
                     title: t('table.createTime'),

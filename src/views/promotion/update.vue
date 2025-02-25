@@ -1,22 +1,37 @@
 <template>
 <a-spin :spinning="spinning">
+    <a-form ref="formRef" :model="formState" :rules="rules">
+    <a-breadcrumb v-if="!isCustom"  class="mb10">
+        <a-breadcrumb-item>
+            <router-link to="/promotion">
+                {{ $t(`menu.promotion`) }}
+            </router-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>
+            <span>
+                {{ $t(`menu.addPromotion`) }}
+                <span v-if="checkRow?.code">({{checkRow?.code}})</span>
+            </span>
+        </a-breadcrumb-item>
+    </a-breadcrumb>
     <div class="container-form">
+        
          <div class="filed">
-            <a-form :model="formState" >
+            
                 <a-row>
-                    <a-col :span="6">
-                        <a-form-item :label="$t('filter.promotionName')">
+                    <a-col :span="8">
+                        <a-form-item :label="$t('filter.promotionName')" >
                             <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
                         </a-form-item>
                     </a-col>
 
-                    <a-col :span="6">
-                        <a-form-item :label="$t('filter.dealDesc')">
+                    <a-col :span="8">
+                        <a-form-item :label="$t('filter.promotionDesc')">
                             <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.description" />
                         </a-form-item>
                     </a-col>
 
-                    <a-col :span="6">
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.promotionType')">
                             <a-select v-model:value="formState.promotion_type" :placeholder="$t('filter.placeholderChange')">
                                 <a-select-option v-for="(item, index) in typeList" :key="index" :value="item.type_value">{{item.type_code}}</a-select-option>
@@ -24,7 +39,7 @@
                         </a-form-item>
                     </a-col>
 
-                    <a-col :span="6">
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.promotionTime')">
                             <a-range-picker 
                                 format="YYYY-MM-DD HH:mm"
@@ -33,8 +48,8 @@
                             />
                         </a-form-item>
                     </a-col>
-                    <a-col :span="6">
-                        <a-form-item :label="$t('filter.level')">
+                    <a-col :span="8">
+                        <a-form-item :label="$t('filter.promotionLevel')">
                             <a-select v-model:value="formState.promotion_level" :placeholder="$t('filter.placeholderChange')">
                                 <a-select-option v-for="(item, index) in levelList" :key="index" :value="item.level_value">{{item.level_code}}</a-select-option>
                             </a-select>
@@ -45,16 +60,16 @@
                             <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
                         </a-form-item>
                     </a-col> -->
-                    <a-col :span="6">
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.repulsionSeries')">
-                            <a-select v-model:value="formState.class_id" :placeholder="$t('filter.placeholderChange')">
-                                <a-select-option v-for="(item, index) in classList" :key="index" :value="item.class_id">{{item.code}}</a-select-option>
+                            <a-select v-model:value="formState.promotion_group" :placeholder="$t('filter.placeholderChange')">
+                                <a-select-option v-for="(item, index) in groupList" :key="index" :value="item.group_code">{{item.group_value}}</a-select-option>
                             </a-select>
                         </a-form-item>
                     </a-col>
                     
                 </a-row>
-            </a-form>
+           
         </div>
         <div class="promotion">
             <a-tabs v-model:activeKey="activeKey">
@@ -79,8 +94,10 @@
 
         </div>
         <div class="pt20" style="text-align: right">
+            
             <a-button @click="onSubmit" type="primary">{{$t('common.submit')}}</a-button>
             <a-button class="ml10">{{$t('common.cancel')}}</a-button>
+
         </div>
 
          <a-modal width="800px" v-model:visible="visible" title="" :closable="false" @ok="handleOk">
@@ -127,6 +144,7 @@
             </a-tabs>
         </a-modal>  
     </div>
+     </a-form>
 </a-spin>
 </template>
 
@@ -146,7 +164,8 @@
         getPromotionLevel,
         getPromotionType,
         getPromotionClass,
-        getPromotionResult
+        getPromotionResult,
+        getPromotionGroup
      } from '@/api/promotion'
     export default defineComponent({
         components: {
@@ -179,6 +198,7 @@
             const classList = ref([]);
             const returnList = ref([]);
             const resultList = ref([]);
+            const groupList = ref([]);
             const detailInfo = ref({})
             const promotionItemSegments = ref([]);
             const promotionLocationSegments = ref([]);
@@ -187,6 +207,23 @@
             const route = useRoute();
             const id = Number(route.params.id);
             let spinning = ref(false)
+            const formRef = ref();
+            const rules = {
+                name: [
+                    {
+                    required: true,
+                    message: 'Please input Activity name',
+                    trigger: 'change',
+                    }
+                ],
+                description: [
+                    {
+                    required: true,
+                    message: 'Please select Activity zone',
+                    trigger: 'change',
+                    },
+                ],
+            }
 
             onMounted(async ()=>{
                  if(id != 0){
@@ -212,7 +249,6 @@
                 
                 getPromotionCondition().then(res => {
                     returnList.value = res.promotion_condition
-                    // provide('returnList', res.promotion_condition); 
                 })
                 getPromotionLevel().then(res => {
                     levelList.value = res.promotion_level
@@ -222,11 +258,13 @@
                 })
                 getPromotionClass().then(res => {
                     classList.value = res.promotion_class
-                    // provide('classList', res.promotion_class); 
                 })
                 getPromotionResult().then(res => {
                     resultList.value = res.promotion_condition
-                    // provide('resultList', res.promotion_condition); 
+                })
+
+                getPromotionGroup().then(res => {
+                    groupList.value = res.promotion_group
                 })
                
             })
@@ -278,18 +316,19 @@
 
              const handleOk = e => {
                 visible.value = false;
+                checkRow.value = item
+                formState.class_id = checkRow.value.class_id
+                console.log(e, 'e')
             };
             const onSubmit = () => {
-                if(promotionItemSegments.value.length == 0){
-                    message.info('请添加商品标签');
+                const conditionIncludeList = promotionItemSegments.value.filter((item, num) => item.item_type == 'Condition');
+                const resultIncludeList = promotionItemSegments.value.filter((item, num) => item.item_type == 'Result');
+                if(conditionIncludeList.length == 0){
+                    message.info('请添加促销条件的商品标签~');
                     return
                 }
-                if(promotionLocationSegments.value.length == 0){
-                    message.info('请添加店铺标签');
-                    return
-                }
-                 if(promotionCustomerSegments.value.length == 0){
-                    message.info('请添加客户标签');
+                if(resultIncludeList.length == 0){
+                    message.info('请添加促销结果的商品标签~');
                     return
                 }
                 const data = {
@@ -300,20 +339,16 @@
                     promotion_location_segments: promotionLocationSegments.value,
                     promotion_customer_segments: promotionCustomerSegments.value
                 }
-                submitPromotion(data).then(res => {
+                 submitPromotion(data).then(res => {
                     if(res.code == 200){
-                        // notification.open({
-                        //     message: '操作成功',
-                        //     description: res.message,
-                        //     icon: h(CheckCircleOutlined, { style: 'color: #108ee9' }),
-                        // });
-
-                        message.success(res.message)
-
+                       message.success(res.message)
                        router.push('/promotion/list')
+                    } else{
+                         message.error(res.message)
                     }
                     
                 })
+                
             };
 
             return {
@@ -327,6 +362,7 @@
                 classList,
                 returnList,
                 resultList,
+                groupList,
                 detailInfo,
                 promotionCondition,
                 promotionItemSegments,
@@ -340,7 +376,9 @@
                 handleOk,
                 getStoreEmitData,
                 getCustomerEmitData,
-                spinning
+                spinning,
+                checkRow,
+                rules
             };
         }
     });
@@ -352,5 +390,12 @@
         padding: 0 10px;
         border-radius: 5px;
         margin: 10px 0 0 0;
+    }
+    .checkedTitle{
+        position: absolute;
+        top: -20px;
+    }
+    .mb10{
+        margin-bottom: 10px;
     }
 </style>

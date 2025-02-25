@@ -122,6 +122,7 @@
                     itemGap: 10
                     // align:'center'
                   },
+                  color: ['#312e2a','#999999'],
                 series:  [
                     {
                       name: 'promtion类型',

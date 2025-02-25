@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 
-// 
+// 模版列表
 export function getPromotionClass(data) {
     return request({
         url: '/promotion/promotion_class',
@@ -10,7 +10,7 @@ export function getPromotionClass(data) {
     })
 }
 
-// 
+// 级别下拉
 export function getPromotionLevel(data) {
     return request({
         url: '/promotion/promotion_level',
@@ -19,10 +19,19 @@ export function getPromotionLevel(data) {
     })
 }
 
-//
+// 类型
 export function getPromotionType(data) {
     return request({
         url: '/promotion/promotion_type',
+        method: 'get',
+        data
+    })
+}
+
+// 互斥组
+export function getPromotionGroup(data) {
+    return request({
+        url: '/promotion/promotion_group',
         method: 'get',
         data
     })

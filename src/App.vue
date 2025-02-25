@@ -6,12 +6,12 @@
 export default defineComponent({
     setup() {
         const colorList = ref([
-          {name: '绿色',color: '#00b96b',menFontColor: '#00b96b'},
-          {name: '蓝色',color: '#1677ff',menFontColor: '#1677ff'},
           {name: '灰色',color: '#312e2a',menFontColor: '#ffffff'},
           {name: '黑色',color: '#000000',menFontColor: '#ffffff'},
+          {name: '蓝色',color: '#1677ff',menFontColor: '#1677ff'},
+          {name: '绿色',color: '#00b96b',menFontColor: '#00b96b'},
         ])
-        const colorChecked = ref('#00b96b')
+        const colorChecked = ref('#312e2a')
         const checked = ref(localStorage.getItem('language') == 'zh');
         const { t, locale } = useI18n()
         const getPopupContainer = (el, dialogContext) => {

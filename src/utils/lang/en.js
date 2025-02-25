@@ -19,6 +19,7 @@ export default{
         deal: 'Deal',
         addCustomer: 'Add Customer',
         addPromotion: 'Add Promotion',
+        addLocation: 'Add Location',
         addItem: 'Add Item',
         location: 'Location',
         itemDetail: 'Item Detail',
@@ -29,15 +30,15 @@ export default{
     filter: {
         promotionName: 'Promotion Name',
         promotionType: 'Promotion Type',
-        promotionWay: '促销折扣方式',
+        promotionWay: 'Promotion Way',
         SegmentName: 'Segment Name',
         createTime: 'Create Time',
         promotionTime: 'Promotion Time',
         createPerson: 'Create Person',
         promotionStatus: 'Promotion Status',
-        level: 'Level',
+        promotionLevel: 'Promotion Level',
         repulsionSeries: 'Repulsion Series',
-        dealDesc: 'Deal Desc',
+        promotionDesc: 'Promotion Desc',
         periodicity: 'Periodicity',
         placeholderInput: 'Please Enter',
         placeholderChange: 'Please Select',
@@ -75,7 +76,8 @@ export default{
         area: 'Area',
         customerLevel: 'Customer Level',
         total: 'Total',
-        items: 'Items'
+        items: 'Items',
+        startingTime: 'Starting Time'
     },
     updateSegment: {
         collocationMethod: 'Collocation Method',

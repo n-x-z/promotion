@@ -78,6 +78,9 @@
                   <template #index="{ index, record }">
                      {{index + 1}}
                   </template>
+                   <template #segment_id="{ index, record }">
+                     <div class="link" @click="onEdit(record.segment_id)" type="link">{{record.segment_id}}</div>
+                  </template>
                    <template #name="{ index, record }">
                      <div>{{record.name}}</div>
                      <div class="description">{{record.description}}</div>
@@ -119,7 +122,7 @@
                 <a-pagination
                         v-model:current="paginationData.page"
                         :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
-                        v-model:pageSiz="paginationData.page_size"
+                        v-model:pageSize="paginationData.page_size"
                         :total="paginationData.total"
                         @change="onChange"
                         
@@ -171,6 +174,9 @@
                 {
                     title: t('table.SegmentId'),
                     dataIndex: 'segment_id',
+                    slots: {
+                        customRender: 'segment_id',
+                    },
                 },
                 {
                     title: t('table.SegmentName'),

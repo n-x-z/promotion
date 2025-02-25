@@ -38,16 +38,19 @@
             </a-layout-header>
             <a-layout-content>
                 <div class="main-breadcrumb">
-                    <a-breadcrumb>
-                        <a-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="index">
-                            <span v-if="!item.path">
-                              {{ $t(`menu.${item.name}`) }}
-                            </span>
-                            <router-link v-else :to="item.path">
+
+                        <a-breadcrumb v-if="!isCustom" class="mb10">
+                            <a-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="index">
+                                <span v-if="!item.path">
                                 {{ $t(`menu.${item.name}`) }}
-                            </router-link>
-                        </a-breadcrumb-item>
-                    </a-breadcrumb>
+                                </span>
+                                <router-link v-else :to="item.path">
+                                    {{ $t(`menu.${item.name}`) }}
+                                </router-link>
+                            </a-breadcrumb-item>
+                        </a-breadcrumb>
+                   
+                    
                     <main class="content">
                          <router-view></router-view>
                     </main>
@@ -94,11 +97,16 @@
                 theme: 'light'
             });
             breadcrumbList = computed(() => {
-            let matched = router.matched.filter(item => item.name)
-             return matched
+                let matched = router.matched.filter(item => item.name)
+                return matched
             })
 
-            console.log(breadcrumbList, 'breadcrumbList')
+            let isCustom = computed(() => {
+                let matched = router.name == 'addPromotion'
+                return matched
+            })
+
+            console.log(router, 'breadcrumbList')
             const changeTheme = (checked) => {
                 state.theme = checked ? 'dark' : 'light';
             };
@@ -109,6 +117,7 @@
                 breadcrumbList,
                 changeTheme,
                 ...toRefs(state),
+                isCustom,
                 leftMenuData: ref([
                     {
                         label: 'home',
@@ -124,10 +133,6 @@
                             { label: 'location', link: '/segment/location' },
                         ],
                     },
-                    // {
-                    //     label: 'deal',
-                    //     icon: 'bi bi-backpack4',
-                    // },
                     {
                         label: 'promotion',
                         icon: () => h(SlackCircleFilled),
@@ -179,7 +184,6 @@
     }
    .content {
        overflow-y: auto;
-       margin-top: 10px;
        height: calc(100vh - 100px);
    }
    .main-breadcrumb{
@@ -192,5 +196,8 @@
     }
     .header-theme{
         margin-left: 10px;
+    }
+    .mb10{
+        margin-bottom: 10px;
     }
 </style>

@@ -38,7 +38,7 @@
                     <div class="flex" v-for="(item,index) in list" :key="index" :class="index == 0 ? '' : 'mt10'">
                         <a-select 
                            v-model:value="item.condition_name" 
-                           style="width: 150px" 
+                           style="width: 250px" 
                            class="ml10" 
                            :placeholder="$t('filter.placeholderChange')"
                            @change="e =>handleConditionNameChange(e,index, '1')"
@@ -47,7 +47,7 @@
                         </a-select>
                         <a-select 
                            v-model:value="item.condition_type" 
-                           style="width: 80px" 
+                           style="width: 180px" 
                            class="ml10" 
                            :placeholder="$t('filter.placeholderChange')"
                            @change="e =>handleConditionNameChange(e,index, '2')"
@@ -61,7 +61,7 @@
                            v-model:value="item.condition_value" 
                            v-if="item.type == 'LIST'" 
                            @change="e =>handleConditionNameChange(e,index, '3')" 
-                           style="width: 150px" class="ml10" 
+                           style="width: 200px" class="ml10" 
                            :placeholder="$t('filter.placeholderChange')"
                         >
                             <a-select-option v-for="(i, num) in item.condition_value_list" :key="num">{{i}}</a-select-option>
@@ -70,7 +70,7 @@
                            v-model:value="item.condition_value" 
                            @change="e =>handleConditionNameChange(e,index, '3')" 
                            v-if="item.type == 'number'" 
-                           style="width: 150px" 
+                           style="width: 200px" 
                            class="ml10" 
                            :placeholder="$t('filter.placeholderInput')" 
                         />
@@ -78,7 +78,7 @@
                            v-model:value="item.condition_value" 
                            @change="e =>handleConditionNameChange(e,index, '3')" 
                            v-if="item.type == 'string'" 
-                           style="width: 150px" 
+                           style="width: 200px" 
                            class="ml10" 
                            :placeholder="$t('filter.placeholderInput')" 
                         />
@@ -86,7 +86,7 @@
                             v-model:value="item.condition_value" 
                             @change="e =>handleConditionNameChange(e,index, '3')" 
                             v-if="item.type == 'Date'" 
-                            style="width: 150px" 
+                            style="width: 200px" 
                             class="ml10" 
                         />
                         
@@ -109,8 +109,8 @@
 
             <div class="flex mt20">
                 <div>{{$t('updateSegment.homeworkFrequency')}}</div>
-                <div class="ml15">
-                    <a-input-group style="width: 300px" compact>
+                <div class="ml30">
+                    <a-input-group style="width: 400px" compact>
                         <a-select 
                            @change="e =>handleScheduleNameChange(e)"  
                            :placeholder="$t('filter.placeholderChange')" 
@@ -218,6 +218,7 @@
             const formState = reactive({
                 segment_status: 'active',
                 condition_type: 'and',
+                description: '',
                 create_type: "condition",
                 public: false,
                 export: false,
@@ -317,7 +318,7 @@
 
             const showDetail = (res) => {
                 formState.name = res.segments[0].name
-                formState.name = res.segments[0].name
+                formState.description = res.segments[0].description
                 formState.public = res.segments[0].public == 1
                 formState.export = res.segments[0].export == 1
                 formState.create_type = res.segments[0].create_type
@@ -445,7 +446,9 @@
 
                         message.success(res.message)
 
-                       router.push('/segment/'+segmentType)
+                       router.push('/segment/'+segmentType+'/update/'+res.segment_id)
+                    }else{
+                         message.error(res.message)
                     }
                     
                 })
@@ -504,5 +507,8 @@
         padding: 20px;
         margin-top: 10px;
         border-radius: 5px;
+    }
+    .ml30{
+        margin-left: 30px;
     }
 </style>

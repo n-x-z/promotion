@@ -81,39 +81,51 @@
                 </a-row>
             </div>
              
-            <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.modalTitle')" @ok="handleOk">
+           <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.addCustomerSegments')" @ok="handleOk">
                 <a-divider style="margin: 0 0 20px 0" />
                 <div class="flex">
-                    <a-input v-model:value="formState.key_word" :placeholder="$t('updatePromotion.idNameSearch')" >
+                    <a-input allowClear v-model:value="formState.key_word" :placeholder="$t('filter.placeholderDetailInput')" >
                         <template #icon>
                             <SearchOutlined />
                         </template>
                     </a-input>
 
-                    <a-button  type="primary" class="ml10">{{$t('updatePromotion.customConditions')}}</a-button>
+                    <a-button type="primary" @click="onSearch" class="ml10">{{$t('common.query')}}</a-button>
                 </div>
 
                 <h4 class="mt10">{{$t('updatePromotion.selectedSegments')}}</h4>
-                <a-row class="mt10" :gutter="16">
-                    <a-col class="mt10" :span="12" v-for="(item, index) in dataSource" :key="index">
-                        <a-card :class="item.checked ? 'borderactive' : ''" @click="onClickCard(item, index)" >
-                            <div class="inline-block card-title">
-                                <div class="card-name fl">ID</div>
-                                <div class="card-desc fl">{{item.segment_id}}</div>
-                            </div>
-                            <div class="inline-block card-title">
-                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
-                                <div class="card-desc fl">{{item.name}}</div>
-                            </div>
-                            <div class="inline-block card-title">
-                                <div class="card-name fl">SKU#</div>
-                                <div class="card-desc fl">{{item.sub_count}}</div>
-                            </div>
-                        </a-card>
-                    </a-col>
-                </a-row>
+                <a-spin :spinning="spinning">
+                    <a-row class="mt10" :gutter="16">
+                        <a-col class="mt10" :span="12" v-for="(item, index) in dataSource" :key="index">
+                            <a-card :class="item.checked ? 'borderactive' : ''" @click="onClickCard(item, index)" >
+                                <div class="inline-block card-title">
+                                    <div class="card-name fl">ID</div>
+                                    <div class="card-desc fl">{{item.segment_id}}</div>
+                                </div>
+                                <div class="inline-block card-title">
+                                    <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                    <div class="card-desc fl">{{item.name}}</div>
+                                </div>
+                                <div class="inline-block card-title">
+                                    <div class="card-name fl">COUNT</div>
+                                    <div class="card-desc fl">{{item.sub_count}}</div>
+                                </div>
+                            </a-card>
+                        </a-col>
+                    </a-row>
+                </a-spin>
+                <div class="mt10">
+                    <a-pagination
+                        v-model:current="paginationData.page"
+                        :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
+                        v-model:pageSize="paginationData.page_size"
+                        :total="paginationData.total"
+                        @change="onSizeChange"
+                        
+                    />
+                </div>
 
-            </a-modal> 
+            </a-modal>  
         </div>
     </div>
 
@@ -153,6 +165,7 @@
             const route = useRoute();
             const id = Number(route.params.id);
             const disabled = ref(false)
+            let spinning = ref(false)
             
 
             onMounted(()=>{
@@ -200,19 +213,34 @@
                 })
             };
 
-            const init = () => {
+             const init = () => {
                 const data = {
-                     segment_type: 'item',
+                     segment_type: 'customer',
                      ...formState.value,
                      ...paginationData.value
                 }
+                spinning.value = true
                 getSegmentsList(data).then(res => {
+                    spinning.value = false
                     dataSource.value = res.data
                     paginationData.value.page = res.page
                     paginationData.value.page_size = res.page_size
                     paginationData.value.total = res.total
                 })
             }
+
+            const onSearch = () => {
+                paginationData.value.page = 1
+                init()
+            }
+
+            const onSizeChange = (pageNumber, pageSize) => {
+         
+                paginationData.value.page = pageNumber || 1
+                paginationData.value.page_size = pageSize
+                init()
+            };
+
              const onClickCard = (item, index) => {
                 checkRow.value = item
                 checkRow.value.include = include.value
@@ -238,7 +266,10 @@
                 handleOk,
                 onClickCard,
                 paginationData,
-                disabled
+                disabled,
+                onSearch,
+                onSizeChange,
+                spinning
             };
         },
     });
@@ -249,11 +280,11 @@
 
     }
    .card-name{
-       width: 40px;
+       width: 60px;
        opacity: 0.6;
    }
     .card-desc{
-        width: calc(100% - 40px);
+        width: calc(100% - 60px);
         color: #181818;
         overflow: hidden;
         white-space: nowrap;
