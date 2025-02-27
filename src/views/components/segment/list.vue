@@ -1,85 +1,44 @@
 <template>
   <div class="container-form">
-      <div class="filed">
-          <a-form :model="formState" >
-
-                
-                    <a-input-group style="width: 500px"  compact>
-                            <a-input style="width: 60%"   allowClear :placeholder="$t('filter.placeholderDetailInput')" v-model:value="formState.key_word" />
-                            <a-select 
-                            style="width: 20%"  
-                            allowClear
-                            v-model:value="formState.segment_status" 
-                            :placeholder="$t('filter.placeholderChange')"
-                            >
-                                <a-select-option value="ALL">{{$t('filter.all')}}</a-select-option>
-                                <a-select-option value="active">{{$t('filter.active')}}</a-select-option>
-                                <a-select-option value="inactive">{{$t('filter.inactive')}}</a-select-option>
-                            </a-select>
-                            <a-button  style="width: 20%"   type="primary" @click="onSubmit">{{$t('common.query')}}</a-button>
-                    </a-input-group>
-                
-                  <!-- <a-col :span="6">
-                      <a-form-item :label="$t('filter.SegmentName')">
-                          <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.key_word" />
-                      </a-form-item>
-                  </a-col>
-
-                  <a-col :span="6">
-                    <a-form-item :label="$t('table.status')">
+      <div class="filed ">
+          <a-form :model="formState" class="flex flex-jcsb">           
+                <a-input-group style="width: 500px"  compact>
+                        <a-input style="width: 60%"   allowClear :placeholder="$t('filter.placeholderDetailInput')" v-model:value="formState.key_word" />
                         <a-select 
-                           v-model:value="formState.segment_status" 
-                           :placeholder="$t('filter.placeholderChange')"
+                        style="width: 20%"  
+                        allowClear
+                        v-model:value="formState.segment_status" 
+                        :placeholder="$t('filter.placeholderChange')"
                         >
                             <a-select-option value="ALL">{{$t('filter.all')}}</a-select-option>
                             <a-select-option value="active">{{$t('filter.active')}}</a-select-option>
                             <a-select-option value="inactive">{{$t('filter.inactive')}}</a-select-option>
                         </a-select>
-                    </a-form-item>
-                </a-col> -->
-
-                  <!-- <a-col :span="6">
-                      <a-form-item :label="$t('filter.createTime')">
-                          <a-date-picker
-                                  v-model:value="formState.date1"
-                                  show-time
-                                  type="date"
-                                  :placeholder="$t('filter.placeholderChange')"
-                                  style="width: 100%"
-                          />
-                      </a-form-item>
-                  </a-col> -->
-
-                  <!-- <a-col :span="6">
-                      <a-form-item :label="$t('filter.createPerson')">
-                          <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
-                      </a-form-item>
-                  </a-col> -->
-                  <!-- <a-col :span="6">
-                      <a-form-item :wrapper-col="{  offset: 2 }">
-                          <a-button type="primary" @click="onSubmit">{{$t('common.query')}}</a-button>
-                          <a-button  @click="onReset" style="margin-left: 10px">{{$t('common.reset')}}</a-button>
-                      </a-form-item>
-                  </a-col> -->
-            
+                        <a-button  style="width: 20%"   type="primary" @click="onSubmit">{{$t('common.query')}}</a-button>
+                </a-input-group>
+                <a-button type="primary" @click="onAdd">
+                    <template #icon><PlusOutlined /></template>
+                    {{$t('table.addSegment')}}
+                </a-button>
           </a-form>
       </div>
       <div class="body-content">
-          <div class="flex flex-jcsb">
+          <!-- <div class="flex flex-jcsb">
               <h3>{{$t('table.SegmentList')}}</h3>
               <a-button type="primary" @click="onAdd">
                   <template #icon><PlusOutlined /></template>
                   {{$t('table.addSegment')}}
               </a-button>
-          </div>
+          </div> -->
 
-          <div class="mt10">
+          <div >
               <a-table :pagination="false" :loading="loading" :data-source="dataSource" :columns="columns">
                   <template #index="{ index, record }">
                      {{index + 1}}
                   </template>
                    <template #segment_id="{ index, record }">
                      <div class="link" @click="onEdit(record.segment_id)" type="link">{{record.segment_id}}</div>
+                     <a-tag color="orange">{{record.create_type}}</a-tag>
                   </template>
                    <template #name="{ index, record }">
                      <div>{{record.name}}</div>
@@ -100,6 +59,9 @@
                                   </a-menu-item>
                                   <a-menu-item>
                                       <a @click="onEdit(record.segment_id)" href="javascript:;"> {{$t('table.edit')}}</a>
+                                  </a-menu-item>
+                                  <a-menu-item>
+                                      <a @click="onCopy(record.segment_id)" href="javascript:;"> {{$t('table.copy')}}</a>
                                   </a-menu-item>
                                   <a-menu-item>
                                       <a href="javascript:;"> {{$t('table.export')}}</a>
@@ -124,6 +86,7 @@
                         :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
                         v-model:pageSize="paginationData.page_size"
                         :total="paginationData.total"
+                        show-size-changer
                         @change="onChange"
                         
                     />
@@ -263,6 +226,9 @@
             const onEdit = (id) => {
                 router.push('/segment/'+segmentType+'/update/'+id)
             }
+            const onCopy = (id) => {
+                router.push('/segment/'+segmentType+'/update/'+id+'?type=copy')
+            }
             const onChange = (pageNumber, pageSize) => {
          
                 paginationData.value.page = pageNumber || 1
@@ -295,7 +261,8 @@
                 onDelete,
                 onDetail,
                 onChangeSwitch,
-                onReset
+                onReset,
+                onCopy
             };
         },
     });

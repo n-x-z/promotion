@@ -5,6 +5,14 @@ import request from '@/utils/request'
 export function getPromotionClass(data) {
     return request({
         url: '/promotion/promotion_class',
+        method: 'get', 
+        data
+    })
+}
+
+export function getPromotionTemplate(data) {
+    return request({
+        url: '/promotion/promotion_template',
         method: 'get',
         data
     })

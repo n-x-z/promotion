@@ -102,7 +102,7 @@
             })
 
             let isCustom = computed(() => {
-                let matched = router.name == 'addPromotion'
+                let matched = router.name == 'addPromotion' || router.name == 'addCustomer' || router.name == 'addLocation' || router.name == 'addItem'
                 return matched
             })
 

@@ -7,7 +7,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 export default defineConfig(({ mode }) => {
     loadEnv(mode, process.cwd(), '');
     return {
-        base: '/vue-promotion',
+        base: '/promotion',
         plugins: [
             vue(),
             basicSsl()

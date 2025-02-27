@@ -4,19 +4,19 @@
          <div class="filed">
             <a-form :model="formState" >
                 <a-row>
-                    <a-col :span="6">
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.promotionName')">
                             <a-input :disabled="true" :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
                         </a-form-item>
                     </a-col>
 
-                    <a-col :span="6">
-                        <a-form-item :label="$t('filter.dealDesc')">
+                    <a-col :span="8">
+                        <a-form-item :label="$t('filter.promotionDesc')">
                             <a-input :disabled="true" :placeholder="$t('filter.placeholderInput')" v-model:value="formState.description" />
                         </a-form-item>
                     </a-col>
 
-                    <a-col :span="6">
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.promotionType')">
                             <a-select :disabled="true" v-model:value="formState.promotion_type" :placeholder="$t('filter.placeholderChange')">
                                 <a-select-option v-for="(item, index) in typeList" :key="index" :value="item.type_value">{{item.type_code}}</a-select-option>
@@ -24,7 +24,17 @@
                         </a-form-item>
                     </a-col>
 
-                    <a-col :span="6">
+                    <a-col :span="8" v-if="formState.promotion_type == 'Coupon'" >
+                        <a-form-item :label="$t('filter.promotionCode')">
+                            <a-input 
+                                :disabled="true"
+                                v-model:value="formState.coupon_code"
+                                :placeholder="$t('filter.placeholderInput')" 
+                            />
+                        </a-form-item>
+                    </a-col>
+
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.promotionTime')">
                             <a-range-picker 
                             :disabled="true"
@@ -34,8 +44,8 @@
                             />
                         </a-form-item>
                     </a-col>
-                    <a-col :span="6">
-                        <a-form-item :label="$t('filter.level')">
+                    <a-col :span="8">
+                        <a-form-item :label="$t('filter.promotionLevel')">
                             <a-select :disabled="true" v-model:value="formState.promotion_level" :placeholder="$t('filter.placeholderChange')">
                                 <a-select-option v-for="(item, index) in levelList" :key="index" :value="item.level_value">{{item.level_code}}</a-select-option>
                             </a-select>
@@ -46,7 +56,7 @@
                             <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
                         </a-form-item>
                     </a-col> -->
-                    <a-col :span="6">
+                    <a-col :span="8">
                         <a-form-item :label="$t('filter.repulsionSeries')">
                             <a-select :disabled="true" v-model:value="formState.class_id" :placeholder="$t('filter.placeholderChange')">
                                 <a-select-option v-for="(item, index) in classList" :key="index" :value="item.class_id">{{item.code}}</a-select-option>
@@ -88,7 +98,7 @@
     import { defineComponent, ref, provide, toRaw, onMounted, reactive} from 'vue';
     import { useRouter, useRoute } from 'vue-router';
     import { message } from 'ant-design-vue';
-    import moment from 'moment';
+    import dayjs from 'dayjs';
     import tab1 from './component/tab1.vue'
     import tab2 from './component/tab2.vue'
     import tab3 from './component/tab3.vue'
@@ -187,7 +197,7 @@
                 formState.name = res.promotion_header.name
                 formState.promotion_id = res.promotion_header.promotion_id
                 formState.promotion_type = res.promotion_header.promotion_type
-                time.value = [moment(res.promotion_header.start_date), moment(res.promotion_header.end_date)]
+                time.value = [dayjs(res.promotion_header.start_date), dayjs(res.promotion_header.end_date)]
                 formState.promotion_level = res.promotion_header.promotion_level
                 formState.description = res.promotion_header.description
                 formState.class_id = res.promotion_header.class_id

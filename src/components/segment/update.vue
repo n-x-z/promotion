@@ -185,7 +185,7 @@
     import { defineComponent, reactive, ref, onMounted, computed, toRaw } from 'vue';
     import { message } from 'ant-design-vue';
     import {useI18n} from 'vue-i18n'
-    import moment from 'moment'
+    import dayjs from 'dayjs'
     import { useRouter, useRoute } from 'vue-router';
     import { weeks, days } from '@/utils/utils'
 
@@ -319,7 +319,7 @@
                 
                 segmentSchedule.value.schedule_type = res.segment_schedule[0].schedule_type
                 segmentSchedule.value.schedule_value = res.segment_schedule[0].schedule_value
-                segmentSchedule.value.schedule_time = moment(res.segment_schedule[0].schedule_time, 'HH:mm')
+                segmentSchedule.value.schedule_time = dayjs(res.segment_schedule[0].schedule_time, 'HH:mm')
                 
                  
 
@@ -407,7 +407,7 @@
                 newdata.segment_id = id
                 newdata.segment_status = "active"
                 newdata.condition_type = 'add'
-                segmentSchedule.value.schedule_time = moment(segmentSchedule.value.schedule_time).format("HH:mm")
+                segmentSchedule.value.schedule_time = dayjs(segmentSchedule.value.schedule_time).format("HH:mm")
                 segmentSchedule.value.create_user = "string"
                 var data = {
                    segment: newdata,

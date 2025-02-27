@@ -5,7 +5,7 @@
             <div class="">
                 <a-row>
                     <a-col :span="11">
-                        <h4>{{$t('updatePromotion.includesStore')}}</h4>
+                        <h4>{{$t('updatePromotion.includesLocation')}}</h4>
                         <a-divider style="margin: 10px 0 10px 0" />
                         <a-row :gutter="16">
                             <a-col :span="12" v-for="(item, index) in includeList" :key="index" >
@@ -19,7 +19,7 @@
                                         </a-col>
                                         <a-col :span="12">
                                             <div class="inline-block card-title">
-                                                <div class="card-name fl">COUNT</div>
+                                                <div class="card-name fl">COUNT#</div>
                                                 <div class="card-desc fl">{{item.sub_count}}</div>
                                             </div>
                                         </a-col>
@@ -35,17 +35,18 @@
                                     </div>
                                 </a-card>
                             </a-col>
-                            <a-button type="link" v-if="!disabled" @click="showModal(1)">
-                                <template #icon><PlusOutlined /></template>
-                                {{$t('updatePromotion.addStoreSegments')}}
-                            </a-button>
+                           
                         </a-row>
+                         <a-button class="add-button" type="link" v-if="!disabled" @click="showModal(1)">
+                                <template #icon><PlusOutlined /></template>
+                                {{$t('updatePromotion.addLocationSegments')}}
+                            </a-button>
                     </a-col>
                     <a-col :span="2" style="text-align: center">
                         <a-divider style="height: 100%" type="vertical" />
                     </a-col>
                     <a-col :span="11">
-                        <h4> {{$t('updatePromotion.excludeStore')}}</h4>
+                        <h4> {{$t('updatePromotion.excludeLocation')}}</h4>
                         <a-divider style="margin: 10px 0 10px 0" />
                          <a-row :gutter="16">
                             <a-col :span="12" v-for="(item, index) in noIncludeList" :key="index" >
@@ -59,7 +60,7 @@
                                 </a-col>
                                 <a-col :span="12">
                                     <div class="inline-block card-title">
-                                        <div class="card-name fl">COUNT</div>
+                                        <div class="card-name fl">COUNT#</div>
                                         <div class="card-desc fl">{{item.sub_count}}</div>
                                     </div>
                                 </a-col>
@@ -77,16 +78,16 @@
                             </a-col>
                          </a-row>
                        
-                        <a-button type="link" v-if="!disabled" @click="showModal(0)">
+                        <a-button class="add-button"  type="link" v-if="!disabled" @click="showModal(0)">
                             <template #icon><PlusOutlined /></template>
-                            {{$t('updatePromotion.addStoreSegments')}}
+                            {{$t('updatePromotion.addLocationSegments')}}
                         </a-button>
 
                     </a-col>
                 </a-row>
             </div>
              
-            <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.addStoreSegments')" @ok="handleOk">
+            <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.addLocationSegments')" @ok="handleOk">
                 <a-divider style="margin: 0 0 20px 0" />
                 <div class="flex">
                     <a-input allowClear v-model:value="formState.key_word" :placeholder="$t('filter.placeholderDetailInput')" >
@@ -112,7 +113,7 @@
                                     <div class="card-desc fl">{{item.name}}</div>
                                 </div>
                                 <div class="inline-block card-title">
-                                    <div class="card-name fl">COUNT</div>
+                                    <div class="card-name fl">COUNT#</div>
                                     <div class="card-desc fl">{{item.sub_count}}</div>
                                 </div>
                             </a-card>
@@ -159,7 +160,7 @@
         setup(props, { emit }) {
             const formState = ref({
                 key_word: '',
-                segment_status: 'ALL',
+                segment_status: 'active',
             });
             const checkRow = ref({})
             const type = ref(0)
@@ -186,7 +187,7 @@
                         showDetail()
                     }  
                     init()
-                },1000)
+                },2000)
             })
 
             const showDetail = () => {

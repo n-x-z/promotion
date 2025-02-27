@@ -19,7 +19,7 @@
                                         </a-col>
                                         <a-col :span="12">
                                             <div class="inline-block card-title">
-                                                <div class="card-name fl">SKU#</div>
+                                                <div class="card-name fl">COUNT#</div>
                                                 <div class="card-desc fl">{{item.sub_count}}</div>
                                             </div>
                                         </a-col>
@@ -35,11 +35,12 @@
                                     </div>
                                 </a-card>
                             </a-col>
-                            <a-button type="link" v-if="!disabled" @click="showModal(1)">
+                        
+                        </a-row>
+                        <a-button class="add-button" type="link" v-if="!disabled" @click="showModal(1)">
                                 <template #icon><PlusOutlined /></template>
                                 {{$t('updatePromotion.addCustomerSegments')}}
                             </a-button>
-                        </a-row>
                     </a-col>
                     <a-col :span="2" style="text-align: center">
                         <a-divider style="height: 100%" type="vertical" />
@@ -47,7 +48,9 @@
                     <a-col :span="11">
                         <h4> {{$t('updatePromotion.excludeCustomer')}}</h4>
                         <a-divider style="margin: 10px 0 10px 0" />
-                        <a-card v-for="(item, index) in noIncludeList" :key="index" class="mt10">
+                        <a-row :gutter="16">
+                            <a-col :span="12" v-for="(item, index) in noIncludeList" :key="index" >
+                                 <a-card class="mt10">
                             <a-row :gutter="16">
                                 <a-col :span="12">
                                     <div class="inline-block card-title">
@@ -57,7 +60,7 @@
                                 </a-col>
                                 <a-col :span="12">
                                     <div class="inline-block card-title">
-                                        <div class="card-name fl">SKU#</div>
+                                        <div class="card-name fl">COUNT#</div>
                                         <div class="card-desc fl">{{item.sub_count}}</div>
                                     </div>
                                 </a-col>
@@ -72,7 +75,9 @@
                                 <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete(index)" class="ml10" />
                             </div>
                         </a-card>
-                        <a-button type="link" v-if="!disabled" @click="showModal(0)">
+                            </a-col>
+                         </a-row>
+                        <a-button class="add-button" type="link" v-if="!disabled" @click="showModal(0)">
                             <template #icon><PlusOutlined /></template>
                             {{$t('updatePromotion.addCustomerSegments')}}
                         </a-button>
@@ -107,7 +112,7 @@
                                     <div class="card-desc fl">{{item.name}}</div>
                                 </div>
                                 <div class="inline-block card-title">
-                                    <div class="card-name fl">COUNT</div>
+                                    <div class="card-name fl">COUNT#</div>
                                     <div class="card-desc fl">{{item.sub_count}}</div>
                                 </div>
                             </a-card>
@@ -145,10 +150,16 @@
             SearchOutlined
         },
         emits: emits,
+         props: {
+            promotionCustomerSegments: {
+                type: Array,
+                default: 'default'
+            },
+        },
         setup(props, { emit }) {
             const formState = ref({
                 key_word: '',
-                segment_status: 'ALL',
+                segment_status: 'active',
             });
             const checkRow = ref({})
             const type = ref(0)
@@ -175,10 +186,14 @@
                         showDetail()
                     }  
                     init()
-                },1000)
+                },2000)
             })
 
             const showDetail = () => {
+                if(props.promotionCustomerSegments.length > 0){
+                    includeList.value = props.promotionCustomerSegments.filter(item => item.include == 1)
+                    noIncludeList.value = props.promotionCustomerSegments.filter(item => item.include == 0)
+                }
             }
 
             const onDelete = key => {

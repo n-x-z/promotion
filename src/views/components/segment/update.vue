@@ -1,6 +1,21 @@
 <template>
    <a-spin :spinning="spinning">
-    <a-form :model="formState" class="container-form">
+    <a-breadcrumb class="mb10">
+        <a-breadcrumb-item>
+            <router-link to="/segment">
+                {{ $t(`menu.segment`) }}
+            </router-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>
+            <span>
+                <span v-if="segmentType == 'item'">{{ $t(`menu.addItem`)}}</span>
+                <span v-if="segmentType == 'customer'">{{ $t(`menu.addCustomer`)}}</span>
+                <span v-if="segmentType == 'location'">{{ $t(`menu.addLocation`)}}</span>
+                <span v-if="!isAdd">(Segment ID: {{id}})</span>
+            </span>
+        </a-breadcrumb-item>
+    </a-breadcrumb>
+    <a-form :model="formState" :rules="rules" ref="formRef" class="container-form">
         <div class="filed">
             <h3>{{$t('updateSegment.collocationMethod')}}</h3>
             <!-- <a-form :model="formState" > -->
@@ -21,8 +36,8 @@
                     <a-col :span="10">
                         <a-form-item :label="$t('table.SegmentSet')">
                            
-                            <a-checkbox @change="e => onChangeCheckbox(e, 'public')" v-model:value="formState.public" >Public</a-checkbox>
-                             <a-checkbox  @change="e => onChangeCheckbox(e, 'export')" v-model:value="formState.export" >Export</a-checkbox>
+                            <a-checkbox @change="e => onChangeCheckbox(e, 'public')" v-model:checked="formState.public" >Public</a-checkbox>
+                             <a-checkbox  @change="e => onChangeCheckbox(e, 'export')" v-model:checked="formState.export" >Export</a-checkbox>
                         </a-form-item>
                     </a-col>
                 </a-row>
@@ -34,7 +49,14 @@
             </div>
             <div class="mt10 flex" >
                 <div class="mt15">{{$t('updateSegment.createConditions')}}</div>
-                <div class="ml20">
+                
+                <div class="  segment-relative">
+                    <div :class="list.length > 1? 'segment-left' :'segment-left segment-left-border'" v-if="list.length>0">
+                        <div class="segment-block" :style="{top: list.length > 1? '0px' : '20px' }">
+                            <div @click="onConditionType('and')" :class="formState.condition_type == 'and' ? 'condition_type condition_active-top' : 'condition_type'">{{$t('updateSegment.and')}}</div>
+                            <div @click="onConditionType('or')" :class="formState.condition_type == 'or' ? 'condition_active-bottom condition_type' : 'condition_type'">{{$t('updateSegment.or')}}</div>
+                        </div>
+                    </div>
                     <div class="flex" v-for="(item,index) in list" :key="index" :class="index == 0 ? '' : 'mt10'">
                         <a-select 
                            v-model:value="item.condition_name" 
@@ -60,17 +82,27 @@
                         <a-select 
                            v-model:value="item.condition_value" 
                            v-if="item.type == 'LIST'" 
+                           :mode="(item.condition_type == 'include' || item.condition_type == 'exclude') ? 'multiple' : ''"
                            @change="e =>handleConditionNameChange(e,index, '3')" 
-                           style="width: 200px" class="ml10" 
+                           style="width: 200px" 
+                           class="ml10" 
                            :placeholder="$t('filter.placeholderChange')"
                         >
-                            <a-select-option v-for="(i, num) in item.condition_value_list" :key="num">{{i}}</a-select-option>
+                            <a-select-option v-for="(i) in item.condition_value_list" :key="i">{{i}}</a-select-option>
                         </a-select>
                         <a-input-number 
                            v-model:value="item.condition_value" 
                            @change="e =>handleConditionNameChange(e,index, '3')" 
                            v-if="item.type == 'number'" 
-                           style="width: 200px" 
+                           :style="{width: item.condition_type == 'between' ? '95px' :'200px'}" 
+                           class="ml10" 
+                           :placeholder="$t('filter.placeholderInput')" 
+                        />
+                        <a-input-number 
+                           v-model:value="item.condition_end_value" 
+                           @change="e =>handleConditionNameChange(e,index, '4')" 
+                           v-if="item.condition_type == 'between'" 
+                           style="width: 95px" 
                            class="ml10" 
                            :placeholder="$t('filter.placeholderInput')" 
                         />
@@ -82,6 +114,7 @@
                            class="ml10" 
                            :placeholder="$t('filter.placeholderInput')" 
                         />
+                        
                         <a-date-picker 
                             v-model:value="item.condition_value" 
                             @change="e =>handleConditionNameChange(e,index, '3')" 
@@ -109,7 +142,7 @@
 
             <div class="flex mt20">
                 <div>{{$t('updateSegment.homeworkFrequency')}}</div>
-                <div class="ml30">
+                <div class="ml50">
                     <a-input-group style="width: 400px" compact>
                         <a-select 
                            @change="e =>handleScheduleNameChange(e)"  
@@ -164,20 +197,42 @@
 
             <a-drawer
                     :title="$t('updateSegment.inventory')"
-                    width="700"
+                    width="50%"
                     placement="right"
                     :closable="false"
                     v-model:visible="detailVisible"
                     :after-visible-change="afterVisibleChange"
             >
-                <a-table :dataSource="dataSource" :columns="columns" />
+                <div class="flex flex-jcsb">
+                    <div>COUNT#{{paginationData.total}}</div>
+                     <a-input-group style="width: 300px"  compact>
+                        <a-input style="width: 80%"   allowClear :placeholder="$t('filter.placeholderInput')" v-model:value="paginationData.key_word" />
+                        <a-button  style="width: 20%"   type="primary" @click="onSearch">{{$t('common.query')}}</a-button>
+                    </a-input-group>
+                </div>
+                
+                
+                <a-table :pagination="false" class="mt10" :dataSource="dataSource" :columns="columns" />
+                <div class="mt20" style="text-align: right;">
+                    <a-pagination
+                    show-size-changer
+                            v-model:current="paginationData.page"
+                            :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
+                            v-model:pageSize="paginationData.page_size"
+                            :total="paginationData.total"
+                            @change="onPaginationChange"
+                            
+                        />
+                </div>
             </a-drawer>
 
         </div>
 
         <a-form-item class="pt20" style="text-align: right">
             <a-button type="primary" @click="onSubmit">{{$t('common.submit')}}</a-button>
-            <a-button class="ml10" @click="onCancel">{{$t('common.cancel')}}</a-button>
+             <a-button v-if="!isAdd && formState.segment_status == 'inactive'" class="ml10" type="primary" @click="onChangeSwitch">{{$t('common.approve')}}</a-button>
+             <a-button v-if="!isAdd" class="ml10"  @click="onDeletDetail">{{$t('common.delete')}}</a-button>
+             <a-button class="ml10" @click="onCancel">{{$t('common.cancel')}}</a-button>
         </a-form-item>
     </a-form>
    </a-spin>
@@ -188,7 +243,7 @@
     import { defineComponent, reactive, ref, onMounted, computed, toRaw, inject } from 'vue';
     import { message } from 'ant-design-vue';
     import {useI18n} from 'vue-i18n'
-    import moment from 'moment'
+    import dayjs from 'dayjs'
     import { useRouter, useRoute } from 'vue-router';
     import { weeks, days } from '@/utils/utils'
     import {
@@ -202,7 +257,9 @@
         segmentsCondition, 
         submitSegments, 
         getSegmentsDetail,
-        getSegmentsModalDetail
+        getSegmentsModalDetail,
+        deleteSegments,
+        updateStatusSegments
     } from '@/api/segments'
 
     const plainOptions = ['Public', 'Export'];
@@ -231,43 +288,38 @@
             let current = ref(0)
             let checkList = ref([])
             let dataSource = ref([])
-            let showColumn = ref({})
+            let showColumn = ref([])
             let segmentSchedule = ref({})
+            let isAdd = ref(true)
             let spinning = ref(false)
             const router = useRouter();
             const visible = ref(false);
             const detailVisible = ref(false);
+            const formRef = ref();
+
+            let paginationData = ref({
+                page: 1,
+                page_size: 10,
+                total: 0,
+                key_word: ''
+            })
+            const rules = {
+                name: [{required: true,message:  t('filter.required'),trigger: 'change',}],
+                description: [{required: true,message:  t('filter.required'),trigger: 'change',}],
+            }
 
             const route = useRoute();
-            const id = Number(route.params.id);
+            const id =  ref(Number(route.params.id));
             const columns = computed (() => {
-                return ([
-                    {
-                        title: showColumn.value.item_id.name,
-                        dataIndex: 'item_id',
-                        key: 'item_id',
-                    },
-                    {
-                        title: showColumn.value.item_name.name,
-                        dataIndex: 'item_name',
-                        key: 'item_name',
-                    },
-                    {
-                        title: showColumn.value.item_description.name,
-                        dataIndex: 'item_description',
-                        key: 'item_description',
-                    },
-                    {
-                        title:  showColumn.value.item_department.name,
-                        dataIndex: 'item_department',
-                        key: 'item_department',
-                    },
-                    {
-                        title: showColumn.value.item_price.name,
-                        dataIndex: 'item_price',
-                        key: 'item_price',
-                    }
-                ])
+                var data = []
+                showColumn.value.forEach(item => {
+                       data.push({
+                        title: item[1].name,
+                        dataIndex: item[0],
+                        key: item[0],
+                       })
+                })
+                return (data)
             })
 
             const afterVisibleChange = bool => {
@@ -275,17 +327,25 @@
             };
             const showDrawer = () => {
                 
-                if(id != 0 ){
+                if(id.value != 0 ){
+                
                     getSegmentsModalDetail({
                         segment_type: segmentType,
-                        segment_id: id,
+                        segment_id: id.value,
+                        ...paginationData.value
                     }).then(res => {
-                        showColumn.value = res.show_column
+                        showColumn.value = Object.entries(res.show_column);
                         dataSource.value = res.segments_detail.data
                         detailVisible.value = true;
+                        paginationData.value.page = res.segments_detail.page
+                        paginationData.value.page_size = res.segments_detail.page_size
+                        paginationData.value.total = res.segments_detail.total
                     })
                 }            
             };
+            const onSearch = () => {
+                showDrawer()
+            }
             const showModal = () => {
                 visible.value = true;
             };
@@ -294,8 +354,19 @@
                 visible.value = false;
             };
 
+            const onPaginationChange = (pageNumber, pageSize) => {
+         
+                paginationData.value.page = pageNumber || 1
+                paginationData.value.page_size = pageSize
+                showDrawer()
+            };
+
             const handleScheduleNameChange = (e) =>{
                 segmentSchedule.value.schedule_value = 0
+            }
+
+            const onConditionType = (e) => {
+                 formState.condition_type =  e
             }
 
             onMounted(()=>{
@@ -303,12 +374,14 @@
                     segment_type: segmentType
                 }).then(res => {
                     returnList.value = res
-                    if(id != 0 ){
+                    if(id.value != 0 ){
+
                         spinning.value = true
                         getSegmentsDetail({
                             segment_type: segmentType,
-                            segment_id: id,
+                            segment_id: id.value,
                         }).then(res => {
+                            isAdd.value = route.query.type == 'copy'
                             spinning.value = false
                             showDetail(res)
                         })
@@ -329,11 +402,24 @@
                 var arr = []
                 res.segments_condition.forEach((item, index) => {
                     returnList.value.forEach((item1,num) => {
+
                         if(item.condition_name == item1.condition_name){
+                            var value = item.condition_value
+                            var endvalue = item.condition_value.split(',')[1]
+                            if(item.condition_type == 'include'){
+                                value = item.condition_value.split(',')
+                            } else {
+                                
+                                value = item.condition_value.split(',')[0]
+                            }
+                            if(item1.value_type == 'Date'){
+                                value = dayjs(value)
+                            }
                             arr.push({
                                 list: returnList.value, 
                                 type: item1.value_type,
-                                condition_value: item.condition_value,
+                                condition_value: value,
+                                condition_end_value: endvalue,
                                 condition_type: item.condition_type,
                                 condition_type_list: item1.condition_type,
                                 condition_value_list: item1.condition_value,
@@ -348,7 +434,7 @@
                 
                 segmentSchedule.value.schedule_type = res.segment_schedule[0].schedule_type
                 segmentSchedule.value.schedule_value = res.segment_schedule[0].schedule_value
-                segmentSchedule.value.schedule_time = moment(res.segment_schedule[0].schedule_time, 'HH:mm')
+                segmentSchedule.value.schedule_time = dayjs(res.segment_schedule[0].schedule_time, 'HH:mm')
 
             }
 
@@ -370,13 +456,15 @@
                 if(type == '1'){
                     current.value = e
                     list.value[index].type = returnList.value[e].value_type
+                    list.value[index].condition_type = undefined
+                    list.value[index].condition_value = undefined
                     checkList.value[index]=list.value[index].list[e].condition_name
                     list.value[index].condition_type_list = list.value[index].list[e].condition_type
                     list.value[index].condition_value_list = list.value[index].list[e].condition_value
                     list.value[index].condition_name = list.value[index].list[e].condition_name
                     getDisabledList()
                 } else if(type == '2'){
-                    
+                    list.value[index].condition_value = undefined
                     if(!list.value[index].condition_name){
                         message.info('请先选择前一个条件')
                         return
@@ -397,7 +485,7 @@
                             if(item.condition_name == list.value[index].condition_name){
                   
                                 if(list.value[index].type == 'LIST'){
-                                    list.value[index].condition_value = list.value[index].list[i].condition_value[e]         
+                                    list.value[index].condition_value = e
                                 } else if(list.value[index].type == 'number') {
                                     list.value[index].condition_value = String(e)         
                                 }
@@ -405,7 +493,17 @@
                             }
                         })      
                     }
+                } else if(type == '4'){
+                    list.value[index].list.forEach((item, i) => {
+                            if(item.condition_name == list.value[index].condition_name){
+                                if(list.value[index].condition_type == 'between'){
+                                    list.value[index].condition_end_value = String(e)   
+                                }
+                               
+                            }
+                     })      
                 }
+                
             }
 
             const getDisabledList = () => {
@@ -418,40 +516,58 @@
                   })
             }
 
-            const onSubmit = () => {
-                
-                const dataList = []
-                list.value.forEach(item => {
-                     dataList.push({
-                         condition_value: item.condition_value,
-                         condition_type: item.condition_type,
-                         condition_name: item.condition_name,
-                         create_user: "string"
-                     })
+            const onSubmit = (type) => {
+                formRef.value
+                .validate()
+                .then(() => {
+                        const dataList = []
+                        list.value.forEach(item => {
+                            let value = item.condition_value
+                            if(!Array.isArray(value) && item.condition_type == 'between'){
+                                value = item.condition_value + ',' + item.condition_end_value
+                            }
+                            dataList.push({
+                                condition_value: Array.isArray(value)? value.join(',') : value,
+                                condition_type: item.condition_type,
+                                condition_name: item.condition_name,
+                                create_user: "string"
+                            })
+                        })
+                        formState.public = formState.public ? 1 : 0
+                        formState.export = formState.export ? 1 : 0
+                        let value=  JSON.parse(JSON.stringify(segmentSchedule.value))
+                        value.schedule_time =  dayjs(value.schedule_time).format("HH:mm")
+                        value.create_user = "string"
+                        if(isAdd.value){
+                            formState.segment_id = 0
+                        }
+                        if(type){
+                             formState.promotion_status = 'active'
+                        }
+                        var data = {
+                            segment: toRaw(formState),
+                            segment_schedule: value,
+                            segment_condition: dataList,
+                            segment_type: segmentType
+                        }
+                         spinning.value = true
+                        submitSegments(data).then(res => {
+                            spinning.value = false
+                            if(res.code == 200){
+
+                                message.success(res.message)
+                                isAdd.value = false
+                                id.value=res.segment_id
+                                router.push('/segment/'+segmentType+'/update/'+res.segment_id)
+                            }else{
+                                message.error(res.message)
+                            }
+                            
+                        })
                 })
-                formState.public = formState.public ? 1 : 0
-                formState.export = formState.export ? 1 : 0
-
-                segmentSchedule.value.schedule_time = moment(segmentSchedule.value.schedule_time).format("HH:mm")
-                segmentSchedule.value.create_user = "string"
-                var data = {
-                   segment: toRaw(formState),
-                   segment_schedule: segmentSchedule.value,
-                   segment_condition: dataList,
-                   segment_type: segmentType
-                }
-
-                submitSegments(data).then(res => {
-                     if(res.code == 200){
-
-                        message.success(res.message)
-
-                       router.push('/segment/'+segmentType+'/update/'+res.segment_id)
-                    }else{
-                         message.error(res.message)
-                    }
-                    
-                })
+                .catch(error => {
+                    console.log('error', error);
+                });
                 
             }
 
@@ -461,9 +577,29 @@
 
             }
 
-            const onCancel = () => {
-
+            const onChangeSwitch = () => {
+                 onSubmit('1')
             }
+
+
+            const onCancel = () => {
+                 router.push('/segment/list')
+            }
+
+            const onDeletDetail = item => {
+                const data = {
+                     segment_type: segmentType,
+                     segment_id: id.value
+                }
+                deleteSegments(data).then(res => {
+                     if(res.code == 200){
+
+                        message.success(res.message)
+                        router.push('/segment/'+segmentType)
+                     }
+                })
+               
+            };
 
 
             return {
@@ -490,7 +626,18 @@
                 weeks,
                 spinning,
                 days,
-                onChangeCheckbox
+                onChangeCheckbox,
+                onConditionType,
+                isAdd,
+                onDeletDetail,
+                segmentType,
+                id,
+                onChangeSwitch,
+                rules,
+                formRef,
+                paginationData,
+                onPaginationChange,
+                onSearch
             };
         },
     });
@@ -511,4 +658,49 @@
     .ml30{
         margin-left: 30px;
     }
+    .segment-relative{
+        position: relative;
+        margin-left: 60px;
+    }
+    .segment-left{
+        position: absolute;
+        height: calc(100% - 60px);
+        width: 20px;
+        left: -20px;
+        top: 10px;
+        border-left: 2px solid #d9d9d9;
+        border-top: 2px solid #d9d9d9;
+        border-bottom: 2px solid #d9d9d9;
+    }
+    .segment-left-border{
+        border-top: none;
+        border-bottom: none;
+    }
+    .segment-block{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        height: 60px;
+        margin: auto;
+        left: -15px;
+        background: #f1f1f1;
+         color: #999;
+        border-radius: 5px;
+    }
+    .condition_type{
+       
+        width: 25px;
+        height: 30px;
+        font-size: 12px;
+        text-align: center;
+        line-height: 30px;
+        cursor: pointer;
+       
+       
+    }
+    .ml50{
+        margin-left: 50px;
+    }
+    
+    
 </style>

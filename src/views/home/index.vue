@@ -8,16 +8,16 @@
             <div>
               <a-row :gutter="[16,16]">
                 <a-col :span="8">
-                   <div class="info-b">未开始</div>
                    <div class="info-bt">12</div>
+                   <div class="info-b">{{$t('table.NotStarted')}}</div>
                 </a-col>
                 <a-col :span="8">
-                   <div class="info-b">进行中</div>
                    <div class="info-bt">6</div>
+                   <div class="info-b">{{$t('table.InProgress')}}</div>
                 </a-col>
                 <a-col :span="8">
-                   <div class="info-b">已结束</div>
                    <div class="info-bt">17</div>
+                   <div class="info-b">{{$t('table.Completed')}}</div>
                 </a-col>
               </a-row>
             </div>
@@ -33,9 +33,9 @@
       </a-col>
       <a-col :span="8">
         <div class="info">
-          <div class="info-tit">{{$t('filter.promotionWay')}}</div>
+          <div class="info-tit">{{$t('filter.applyType')}}</div>
           <div>
-            <e-charts class="chart" :option="option" />
+            <e-charts class="chart" :option="option1" />
           </div>
         </div>  
       </a-col>
@@ -125,7 +125,7 @@
                   color: ['#312e2a','#999999'],
                 series:  [
                     {
-                      name: 'promtion类型',
+                      name: '',
                       type: 'pie',
                       radius: ['40%', '70%'],
                       avoidLabelOverlap: false,
@@ -158,8 +158,61 @@
               }
             })
 
+              const option1 = computed(()=>{
+              return{
+                 tooltip: {
+                    trigger: 'item'
+                  },
+                  legend: {
+                    top: '0%',
+                    // right:'0%',
+                    left: 'right',
+                    // top:'center',
+                    orient:'vertical',
+                    icon: 'circle',
+                    itemHeight: 10,
+                    itemGap: 10
+                    // align:'center'
+                  },
+                  color: ['#312e2a','#999999'],
+                series:  [
+                    {
+                      name: '',
+                      type: 'pie',
+                      radius: ['40%', '70%'],
+                      avoidLabelOverlap: false,
+                      label: {
+                        show: false,
+                        position: 'center'
+                      },
+                       itemStyle: {
+                          borderColor: '#fff',
+                          borderWidth: 3
+                        },
+                      emphasis: {
+                        label: {
+                          show: true,
+                          fontSize: 20,
+                          // fontWeight: 'bold'
+                        }
+                      },
+                      labelLine: {
+                        show: false
+                      },
+                      data: [
+                        { value: 8, name: 'Transaction' },
+                        { value: 5, name: 'Line' },
+                    
+                      ],
+            
+                    }
+                  ]
+              }
+            })
+
             return {
-              option
+              option,
+              option1
             }
            
           }
@@ -184,10 +237,21 @@
   font-weight: bold;
   color: #303030;
   text-align: center;
-  margin-top: 24px;
+  /* margin-top: 20px; */
+  padding: 20px;
+  position: relative;
+}
+.info-num::after{
+  content: '';
+  position: absolute;
+  height: 1px;
+  background: #f1f1f1;
+  width: 100%;
+  bottom: 0;
+  left: 0;
 }
 .info-b{
-  margin-top: 32px;
+  margin-top: 20px;
   color: #606060;
   text-align: center;
   font-size: 14px;

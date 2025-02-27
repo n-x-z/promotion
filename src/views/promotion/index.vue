@@ -1,93 +1,52 @@
  <template>
   <div class="container-form">
       <div class="filed">
-          <a-form :model="formState" >
-             
-                    <a-input-group style="width: 500px"  compact>
-                            <a-input style="width: 60%"   allowClear :placeholder="$t('filter.placeholderDetailInput')" v-model:value="formState.key_word" />
-                            <a-select 
-                            style="width: 20%"  
-                            allowClear
-                            v-model:value="formState.segment_status" 
-                            :placeholder="$t('filter.placeholderChange')"
-                            >
-                                <a-select-option value="ALL">{{$t('filter.all')}}</a-select-option>
-                                <a-select-option value="active">{{$t('filter.active')}}</a-select-option>
-                                <a-select-option value="inactive">{{$t('filter.inactive')}}</a-select-option>
-                            </a-select>
-                            <a-button  style="width: 20%"   type="primary" @click="onSubmit">{{$t('common.query')}}</a-button>
-                    </a-input-group>
-               
-                  <!-- <a-col :span="6">
-                      <a-form-item :label="$t('filter.promotionName')">
-                          <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.key_word" />
-                      </a-form-item>
-                  </a-col> -->
-
-                  <!-- <a-col :span="6">
-                    <a-form-item :label="$t('table.status')">
-                        <a-select 
-                           v-model:value="formState.promotion_status" 
-                           :placeholder="$t('filter.placeholderChange')"
-                        >
-                            <a-select-option value="ALL">全部</a-select-option>
-                            <a-select-option value="active">开启</a-select-option>
-                            <a-select-option value="inactive">关闭</a-select-option>
-                        </a-select>
-                    </a-form-item>
-                </a-col> -->
-
-                  <!-- <a-col :span="6">
-                      <a-form-item :label="$t('filter.createTime')">
-                          <a-date-picker
-                                  v-model:value="formState.date1"
-                                  show-time
-                                  type="date"
-                                  :placeholder="$t('filter.placeholderChange')"
-                                  style="width: 100%"
-                          />
-                      </a-form-item>
-                  </a-col> -->
-
-                  <!-- <a-col :span="6">
-                      <a-form-item :label="$t('filter.createPerson')">
-                          <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
-                      </a-form-item>
-                  </a-col> -->
-                  <!-- <a-col :span="6">
-                      <a-form-item :wrapper-col="{  offset: 2 }">
-                          <a-button type="primary" @click="onSubmit">{{$t('common.query')}}</a-button>
-                          <a-button  @click="onReset" style="margin-left: 10px">{{$t('common.reset')}}</a-button>
-                      </a-form-item>
-                  </a-col> -->
-             
+          <a-form :model="formState" class="flex flex-jcsb">
+                <a-input-group style="width: 500px"  compact>
+                    <a-input style="width: 60%"   allowClear :placeholder="$t('filter.placeholderDetailInput')" v-model:value="formState.key_word" />
+                    <a-select 
+                    style="width: 20%"  
+                    allowClear
+                    v-model:value="formState.promotion_status" 
+                    :placeholder="$t('filter.placeholderChange')"
+                    >
+                        <a-select-option value="ALL">{{$t('filter.all')}}</a-select-option>
+                        <a-select-option value="active">{{$t('filter.active')}}</a-select-option>
+                        <a-select-option value="inactive">{{$t('filter.inactive')}}</a-select-option>
+                    </a-select>
+                    <a-button  style="width: 20%"   type="primary" @click="onSubmit">{{$t('common.query')}}</a-button>
+                </a-input-group>
+                 <a-button type="primary" @click="onAdd">
+                    <template #icon><PlusOutlined /></template>
+                    {{$t('table.addPromotion')}}
+                </a-button>
           </a-form>
       </div>
       <div class="body-content">
-          <div class="flex flex-jcsb">
+          <!-- <div class="flex flex-jcsb">
               <h3>{{$t('table.promotionList')}}</h3>
               <a-button type="primary" @click="onAdd">
                   <template #icon><PlusOutlined /></template>
                   {{$t('table.addPromotion')}}
               </a-button>
-          </div>
+          </div> -->
 
-          <div class="mt10">
+          <div >
               <a-table :pagination="false" :loading="loading" :data-source="dataSource" :columns="columns">
                   <template #index="{ index, record }">
                      {{index + 1}}
                   </template>
                   <template #promotion_id="{ index, record }">
-                     <div class="link" @click="onEdit(record.promotion_id)" type="link">{{record.promotion_id}}</div>
+                     <div class="link" @click="onEdit(record.promotion_id, record)" type="link">{{record.promotion_id}}</div>
                   </template>
                    <template #name="{ index, record }">
                      <div>{{record.name}}</div>
                      <div class="description">{{record.description}}</div>
                   </template>
                   <template #time="{ index, record }">
-                    <a-tag v-if="record.time_stats == '已结束'" color="default">{{record.time_stats}}</a-tag>
-                    <a-tag v-if="record.time_stats == '进行中'" color="green">{{record.time_stats}}</a-tag>
-                     <a-tag v-if="record.time_stats == '未开始'" color="blue">{{record.time_stats}}</a-tag>
+                    <a-tag v-if="record.time_stats == 'Completed'" color="default">{{$t('table.Completed')}}</a-tag>
+                    <a-tag v-if="record.time_stats == 'In Progress'" color="green">{{$t('table.InProgress')}}</a-tag>
+                     <a-tag v-if="record.time_stats == 'Not Started'" color="blue">{{$t('table.NotStarted')}}</a-tag>
                      <div>{{record.start_date}}~{{record.end_date}}</div>
                   </template>
                   <template #status="{ index, record }">
@@ -101,10 +60,13 @@
                           <template #overlay>
                               <a-menu style="width: 150px">
                                   <a-menu-item>
-                                      <a @click="onDetail(record.promotion_id)" href="javascript:;"> {{$t('table.detail')}}</a>
+                                      <a @click="onDetail(record.promotion_id, record)" href="javascript:;"> {{$t('table.detail')}}</a>
                                   </a-menu-item>
                                   <a-menu-item>
-                                      <a @click="onEdit(record.promotion_id)" href="javascript:;"> {{$t('table.edit')}}</a>
+                                      <a @click="onEdit(record.promotion_id, record)" href="javascript:;"> {{$t('table.edit')}}</a>
+                                  </a-menu-item>
+                                   <a-menu-item>
+                                      <a @click="onCopy(record.promotion_id, record)" href="javascript:;"> {{$t('table.copy')}}</a>
                                   </a-menu-item>
                                   <a-menu-item>
                                       <a href="javascript:;"> {{$t('table.export')}}</a>
@@ -129,6 +91,7 @@
                         :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
                         v-model:pageSiz="paginationData.page_size"
                         :total="paginationData.total"
+                        show-size-changer
                         @change="onChange"
                         
                     />
@@ -136,6 +99,54 @@
           </div>
 
       </div>
+
+        <a-modal width="800px" v-model:visible="visible" :maskClosable="false" title="" :closable="false" @ok="handleOk">
+            <!-- <template #footer>
+                <a-button key="submit" type="primary" @click="handleOk">Submit</a-button>
+            </template> -->
+            <a-tabs v-model:activeKey="activeKey">
+                <a-tab-pane key="1" :tab="$t('updatePromotion.selectFromPromotionTypes')">
+                    <a-row :gutter="16">
+                        <a-col :span="8" class="mt10" v-for="(item, index) in classList" :key="index">
+                            <a-card 
+                               :class="item.checked ? 'borderactive' : ''"
+                               @click="onClickCard(item, index)" 
+                               :title="item.code" 
+                            >
+                                <div class="desc color9">{{item.discription}}</div>
+                            </a-card>
+                        </a-col>
+                    </a-row>
+                </a-tab-pane>
+                <a-tab-pane key="2" :tab="$t('updatePromotion.selectFromPromotionTemplate')" force-render>
+                    <div class="flex flex-jcsb">
+                        <div style="width: 250px">
+                            <div class="mt10" v-for="(item, index) in classList" :key="index">
+                                <a-card
+                                    :class="item.checked ? 'borderactive' : ''"
+                                    @click="onClickCard(item, index)"  
+                                    :title="item.code" 
+                                >
+                                    <div class="desc color9">{{item.discription}}</div>
+                                </a-card>
+                            </div>
+                        </div>
+                        <div style="width: 450px" >
+                            <div class="mt10" v-for="(item, index) in templateList" :key="index">
+                                <a-card :title="item.code"  :class="item.checked ? 'borderactive' : ''" @click="onClickChildCard(index)" >
+                                   
+                                     <div class="desc color9">{{item.discription}}</div>
+                                </a-card>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </a-tab-pane>
+
+            </a-tabs>
+        </a-modal>  
   </div>
 
 </template>
@@ -145,7 +156,13 @@
     import { useRouter } from 'vue-router';
     import {useI18n} from 'vue-i18n'
     import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue';
-    import { getPromotionList, deletePromotion, updateStatusPromotion } from '@/api/promotion'
+    import { 
+        getPromotionList, 
+        deletePromotion, 
+        updateStatusPromotion, 
+        getPromotionClass,
+        getPromotionTemplate
+     } from '@/api/promotion'
     
     export default defineComponent({
         components: {
@@ -163,7 +180,11 @@
                 total: 0,
             })
             let loading = ref(true)
+            const visible = ref(false);
+            const classList = ref([]);
+            const templateList = ref([])
             let {t} = useI18n()
+            const checkRow = ref({})
 
             const columns = computed (() => {
                 return([
@@ -263,14 +284,37 @@
                 })
                
             };
-            const onAdd = () => {
-                router.push('/promotion/update/0')
-            };
-            const onDetail = (id) => {
-                router.push('/promotion/detail/'+id)
+            const onClickCard = (item, index) => {
+                checkRow.value = item
+                classList.value.forEach((item, num) => {
+                    if(index == num){
+                        item.checked = !item.checked
+                    } else {
+                        item.checked = false
+                    }
+                })
             }
-            const onEdit = (id) => {
-                router.push('/promotion/update/'+id)
+            const onAdd = () => {
+                getPromotionClass().then(res => {
+                    classList.value = res.promotion_class
+                })
+                getPromotionTemplate().then(res => {
+                    templateList.value = res.promotion_template
+                })
+                visible.value = true;
+                // router.push('/promotion/update/0')
+            };
+            const handleOk = () => {
+                router.push('/promotion/update/0?code='+checkRow.value.code+'&class_id='+checkRow.value.class_id)
+            }
+            const onDetail = (id, item) => {
+                router.push('/promotion/detail/'+id + '?code='+item.class_code+'&class_id='+item.class_id)
+            }
+            const onEdit = (id, item) => {
+                router.push('/promotion/update/'+id + '?code='+item.class_code+'&class_id='+item.class_id)
+            }
+            const onCopy = (id, item) => {
+                router.push('/promotion/update/'+id+'?type=copy' + '&code='+item.class_code+'&class_id='+item.class_id)
             }
             const onChange = (pageNumber, pageSize) => {
          
@@ -303,7 +347,13 @@
                 onDelete,
                 onChangeSwitch,
                 onReset,
-                onDetail
+                onDetail,
+                onCopy,
+                visible,
+                classList,
+                onClickCard,
+                handleOk,
+                templateList
             };
         },
     });
