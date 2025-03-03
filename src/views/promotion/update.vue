@@ -1,130 +1,148 @@
 <template>
-<a-spin :spinning="spinning">
-    <a-form ref="formRef" :model="formState" :rules="rules">
-    <a-breadcrumb class="mb10">
-        <a-breadcrumb-item>
-            <router-link to="/promotion">
-                {{ $t(`menu.promotion`) }}
-            </router-link>
-        </a-breadcrumb-item>
-        <a-breadcrumb-item>
-            <span>
-                {{ $t(`menu.addPromotion`) }}
-                <span v-if="checkRow?.code">{{checkRow?.code}} </span>
-                <span v-if="!isAdd">(Promotion ID: {{id}})</span>
-                
-            </span>
-        </a-breadcrumb-item>
-    </a-breadcrumb>
-    <div class="container-form">
-        
-         <div class="filed">
-            
-                <a-row>
-                    <a-col :span="8">
-                        <a-form-item name="name" :label="$t('filter.promotionName')">
-                            <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
-                        </a-form-item>
-                    </a-col>
-
-                    <a-col :span="8">
-                        <a-form-item name="description" :label="$t('filter.promotionDesc')">
-                            <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.description" />
-                        </a-form-item>
-                    </a-col>
-
-                    <a-col :span="8">
-                        <a-form-item name="promotion_level" :label="$t('filter.promotionLevel')">
-                            <a-select v-model:value="formState.promotion_level" :placeholder="$t('filter.placeholderChange')">
-                                <a-select-option v-for="(item, index) in levelList" :key="index" :value="item.level_value">{{item.level_code}}</a-select-option>
-                            </a-select>
-                        </a-form-item>
-                    </a-col>
-                    
-
-                    <a-col :span="8">
-                        <a-form-item :label="$t('filter.promotionTime')">
-                            <a-range-picker 
-                                format="YYYY-MM-DD HH:mm"
-                                style="width: 100%"
-                                @change="onChange"
-                                v-model:value="time" 
-                            />
-                        </a-form-item>
-                    </a-col>
-                   
-                    <!-- <a-col :span="6">
-                        <a-form-item :label="$t('filter.periodicity')">
-                            <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
-                        </a-form-item>
-                    </a-col> -->
-                    <a-col :span="8">
-                        <a-form-item name="promotion_group" :label="$t('filter.repulsionSeries')">
-                            <a-select v-model:value="formState.promotion_group" :placeholder="$t('filter.placeholderChange')">
-                                <a-select-option v-for="(item, index) in groupList" :key="index" :value="item.group_code">{{item.group_value}}</a-select-option>
-                            </a-select>
-                        </a-form-item>
-                    </a-col>
-
-                    <a-col :span="8">
-                        <a-form-item name="promotion_type" :label="$t('filter.promotionType')">
-                            <a-select v-model:value="formState.promotion_type" :placeholder="$t('filter.placeholderChange')">
-                                <a-select-option v-for="(item, index) in typeList" :key="index" :value="item.type_value">{{item.type_code}}</a-select-option>
-                            </a-select>
-                        </a-form-item>
-                    </a-col>
-
-                    <a-col :span="8" v-if="formState.promotion_type == 'Coupon'" >
-                        <a-form-item :label="$t('filter.couponCode')">
-                            <a-input 
-                                v-model:value="formState.coupon_code"
-                                :placeholder="$t('filter.placeholderInput')" 
-                            />
-                        </a-form-item>
-                    </a-col>
-                    
-                </a-row>
-           
-        </div>
-        <div class="promotion">
-            <a-tabs v-model:activeKey="activeKey">
-                <a-tab-pane key="1" :tab="$t('updatePromotion.promotionConditions')">
-                    <tab1 
-                      @onEmit="getEmitData"
-                      :resultList="resultList" 
-                      :returnList="returnList" 
-                      :promotionItemSegments="promotionItemSegments" 
-                      :promotionConditionData="promotionCondition"
-                      :promotionResultData="promotionResult"
-                      />
-                </a-tab-pane>
-                <a-tab-pane key="2" :tab="$t('updatePromotion.LocationScope')" force-render>
-                    <tab2  @onEmit="getStoreEmitData" :promotionLocationSegments="promotionLocationSegments" />
-                </a-tab-pane>
-                <a-tab-pane key="3" :tab="$t('updatePromotion.customerScope')" force-render>
-                    <tab3 @onEmit="getCustomerEmitData" :promotionCustomerSegments="promotionCustomerSegments" />
-                </a-tab-pane>
-            </a-tabs>
-
-        </div>
-        <div class="pt20" style="text-align: right">
-            
-            <a-button @click="onSubmit" type="primary">{{$t('common.submit')}}</a-button>
-            <a-button v-if="!isAdd && formState.promotion_status == 'inactive'" class="ml10" type="primary" @click="onChangeSwitch">{{$t('common.approve')}}</a-button>
-            <a-button v-if="!isAdd" class="ml10" @click="onDeletDetail">{{$t('common.delete')}}</a-button>
-            <a-button class="ml10" @click="onCancel">{{$t('common.cancel')}}</a-button>
-
-        </div>
-
+    <div class="breadcrumb">
+        <a-breadcrumb class="mb10">
+            <a-breadcrumb-item>
+                <router-link to="/promotion">
+                    {{ $t(`menu.promotion`) }}
+                </router-link>
+            </a-breadcrumb-item>
+            <a-breadcrumb-item>
+                <span>
+                    {{ $t(`menu.addPromotion`) }}
+                    <span class="bold" v-if="checkRow?.code">{{checkRow?.code}} </span>
+                    <span class="bold" v-if="!isAdd">(Promotion ID: {{id}})</span>
+                </span>
+            </a-breadcrumb-item>
+        </a-breadcrumb>
     </div>
-     </a-form>
-</a-spin>
+    
+    <a-spin :spinning="spinning">
+        <a-form ref="formRef" class="mt32" :model="formState" :rules="rules">
+        <div class="container-form">
+            <div class="filed">           
+                    <a-row>
+                        <a-col :span="8">
+                            <a-form-item name="name" :label="$t('filter.promotionName')">
+                                <a-input showCount maxlength="30" :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
+                            </a-form-item>
+                        </a-col>
+
+                        <a-col :span="8">
+                            <a-form-item name="description" :label="$t('filter.promotionDesc')">
+                                <a-input showCount maxlength="60" :placeholder="$t('filter.placeholderInput')" v-model:value="formState.description" />
+                            </a-form-item>
+                        </a-col>
+
+                        <a-col :span="8">
+                            <a-form-item name="promotion_level" :label="$t('filter.promotionLevel')">
+                                <a-select v-model:value="formState.promotion_level" :placeholder="$t('filter.placeholderChange')">
+                                    <a-select-option v-for="(item, index) in levelList" :key="index" :value="item.level_value">{{item.level_code}}</a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
+                        
+
+                        <a-col :span="8">
+                            <a-form-item :label="$t('filter.promotionTime')">
+                                <a-range-picker 
+                                    format="YYYY-MM-DD HH:mm"
+                                    style="width: 100%"
+                                    @change="onChange"
+                                    v-model:value="time" 
+                                />
+                            </a-form-item>
+                        </a-col>
+                    
+                        <!-- <a-col :span="6">
+                            <a-form-item :label="$t('filter.periodicity')">
+                                <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
+                            </a-form-item>
+                        </a-col> -->
+                        <a-col :span="8">
+                            <a-form-item name="promotion_group" :label="$t('filter.repulsionSeries')">
+                                <a-select v-model:value="formState.promotion_group" :placeholder="$t('filter.placeholderChange')">
+                                    <a-select-option v-for="(item, index) in groupList" :key="index" :value="item.group_code">{{item.group_value}}</a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
+
+                        <a-col :span="8">
+                            <a-form-item name="promotion_type" :label="$t('filter.promotionType')">
+                                <a-select v-model:value="formState.promotion_type" :placeholder="$t('filter.placeholderChange')">
+                                    <a-select-option v-for="(item, index) in typeList" :key="index" :value="item.type_value">{{item.type_code}}</a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
+
+                        <a-col :span="8" v-if="formState.promotion_type == 'Coupon'" >
+                            <a-form-item :label="$t('filter.couponCode')">
+                                <a-input 
+                                    v-model:value="formState.coupon_code"
+                                    :placeholder="$t('filter.placeholderInput')" 
+                                />
+                            </a-form-item>
+                        </a-col>
+                        
+                    </a-row>
+            
+            </div>
+            <div class="promotion">
+                <a-tabs v-model:activeKey="activeKey">
+                    <a-tab-pane key="1" :tab="$t('updatePromotion.promotionConditions')">
+                        <tab1 
+                        @onEmit="getEmitData"
+                        :resultList="resultList" 
+                        :returnList="returnList" 
+                        :promotionItemSegments="promotionItemSegments" 
+                        :promotionConditionData="promotionCondition"
+                        :promotionResultData="promotionResult"
+                        />
+                    </a-tab-pane>
+                    <a-tab-pane key="2" :tab="$t('updatePromotion.LocationScope')" force-render>
+                        <tab2  @onEmit="getStoreEmitData" :promotionLocationSegments="promotionLocationSegments" />
+                    </a-tab-pane>
+                    <a-tab-pane key="3" :tab="$t('updatePromotion.customerScope')" force-render>
+                        <tab3 @onEmit="getCustomerEmitData" :promotionCustomerSegments="promotionCustomerSegments" />
+                    </a-tab-pane>
+                </a-tabs>
+
+            </div>
+            <div class="pt20" style="text-align: right">            
+                <a-button @click="onSubmit" type="primary">{{$t('common.submit')}}</a-button>
+                <a-button v-if="!isAdd && formState.promotion_status == 'inactive'" class="ml10" type="primary" @click="onChangeSwitch">{{$t('common.approve')}}</a-button>
+                <a-button v-if="!isAdd" class="ml10" @click="onDeletDetail">{{$t('common.delete')}}</a-button>
+                <a-button class="ml10" @click="onCancel">{{$t('common.cancel')}}</a-button>
+            </div>
+
+        </div>
+        </a-form>
+    </a-spin>
+    <a-modal v-model:open="open" title="">
+        <div v-if="isSuccess" class="modal-icon">
+            <img src="../../assets/images/success.svg" />
+            <div>{{$t('common.addSuccess')}}</div>
+        </div>
+        <div v-else class="modal-icon">
+            <img src="../../assets/images/fail.svg" />
+            <div>{{$t('common.addFail')}}</div>
+        </div>
+        
+        <template #footer>
+            <div v-if="isSuccess" style="display: flex;justify-content: center;">
+                <a-button shape="round" @click="handleCancel">{{$t('common.back')}}</a-button>
+                <a-button shape="round" class="ml40" type="primary" @click="handleOk">{{$t('common.stayHere')}}</a-button>
+            </div>
+            <div v-else style="display: flex;justify-content: center;">
+                <a-button shape="round" @click="handleOk">{{$t('common.close')}}</a-button>
+            </div>
+      </template>   
+    </a-modal>
 </template>
 
 <script>
-    import { defineComponent, ref, provide, toRaw, onMounted, reactive, h} from 'vue';
+    import { defineComponent, ref, toRaw, onMounted, reactive} from 'vue';
     import { useRouter, useRoute } from 'vue-router';
-    import { message, notification } from 'ant-design-vue';
+    import { message } from 'ant-design-vue';
     import { CheckCircleOutlined } from '@ant-design/icons-vue';
     import dayjs from 'dayjs';
     import {useI18n} from 'vue-i18n'
@@ -137,11 +155,9 @@
         getPromotionDetail, 
         getPromotionLevel,
         getPromotionType,
-        getPromotionClass,
         getPromotionResult,
         getPromotionGroup,
-        deletePromotion,
-        updateStatusPromotion
+        deletePromotion
      } from '@/api/promotion'
     export default defineComponent({
         components: {
@@ -175,21 +191,23 @@
                 overlap: 0,
             });
             let {t} = useI18n()
+            const open = ref(false)
+            const isSuccess = ref(false)
             const checkRow = ref({
                 class_id:route.query.class_id,
                 code:route.query.code
-            })
-            const promotionCondition = ref({})
-            const promotionResult = ref({})
+            })  // 面包屑回显数据
+            const promotionCondition = ref({}) // 促销条件表单
+            const promotionResult = ref({}) // 促销结果表单
             const levelList = ref([]);
             const typeList = ref([]);
             const returnList = ref([]);
             const resultList = ref([]);
             const groupList = ref([]);
             const detailInfo = ref({})
-            const promotionItemSegments = ref([]);
-            const promotionLocationSegments = ref([]);
-            const promotionCustomerSegments = ref([]);
+            const promotionItemSegments = ref([]); // 商品列表
+            const promotionLocationSegments = ref([]); // 门店列表
+            const promotionCustomerSegments = ref([]); // 客户列表
             const time = ref([])
            
             let isAdd = ref(true)
@@ -254,13 +272,14 @@
                 })
                
             })
-
+            // 回显的详情数据
             const showDetail = (res) => {
                 formState.name = res.promotion_header.name
                 formState.promotion_id = res.promotion_header.promotion_id
                 formState.promotion_type = res.promotion_header.promotion_type
                 time.value = [dayjs(res.promotion_header.start_date, 'YYYY-MM-DD HH:mm'), dayjs(res.promotion_header.end_date, 'YYYY-MM-DD HH:mm')]
                 formState.promotion_level = res.promotion_header.promotion_level
+                formState.promotion_status = res.promotion_header.promotion_status
                 formState.description = res.promotion_header.description
                 formState.class_id = res.promotion_header.class_id
                 formState.end_date = res.promotion_header.end_date
@@ -283,6 +302,7 @@
                 formState.end_date = dateString[1]
             };
 
+            // 回传的商品数据
             const getEmitData = (data) => {
                 formState.condition_type= data.promotion_condition.condition_type
                 formState.threshold_style= data.promotion_condition.threshold_style
@@ -298,21 +318,21 @@
                 promotionItemSegments.value = data.promotion_item_segments
 
             }
-
-
-
+            // 回传的门店数据
             const getStoreEmitData = (data) => {
                 promotionLocationSegments.value = data.promotion_location_segments
             }
-
-             const getCustomerEmitData = (data) => {
+            // 回传的客户数据
+            const getCustomerEmitData = (data) => {
                 promotionCustomerSegments.value = data.promotion_customer_segments
             }
 
+            // 切换激活按钮
             const onChangeSwitch = () => {
                 onSubmit('1')
             }
 
+            // 删除创建的数据
             const onDeletDetail = () => {
                 const data = {
                      promotion_id: id.value
@@ -327,6 +347,16 @@
                 })
             }
 
+            const handleCancel = () => {
+                router.push('/promotion/list')
+            }
+
+            const handleOk = () => {
+                open.value = false
+                router.push('/promotion/update/'+id.value)
+            }
+
+            // 提交数据
             const onSubmit = (type) => {
                 formRef.value
                 .validate()
@@ -358,17 +388,21 @@
                             promotion_location_segments: promotionLocationSegments.value,
                             promotion_customer_segments: promotionCustomerSegments.value
                         }
+                        spinning.value = true
                         submitPromotion(data).then(res => {
+                             spinning.value = false
+                             open.value = true
                             if(res.code == 200){
-                                message.success(res.message)
-                                isAdd.value = false
                                 id.value=res.promotion_id
-                                router.push('/promotion/update/'+res.promotion_id)
+                                isAdd.value = false
+                                isSuccess.value = true
+                                
+                                // router.push('/promotion/update/'+res.promotion_id)
                             } else{
+                                isSuccess.value = false
                                 if(type){
                                     formState.promotion_status = 'inactive'
                                 }
-                                message.error(res.message)
                             }
                             
                         })
@@ -413,7 +447,11 @@
                 isAdd,
                 onDeletDetail,
                 id,
-                onChangeSwitch
+                onChangeSwitch,
+                open,
+                handleCancel,
+                handleOk,
+                isSuccess
             };
         }
     });

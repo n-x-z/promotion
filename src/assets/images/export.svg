@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>导出</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
+        <g id="画板" transform="translate(-357, -224)" stroke="#979797">
+            <g id="编组-13备份" transform="translate(357, 224)">
+                <path d="M10.5009034,7.5 L11.5006023,7.5 C12.6048391,7.5 13.5,8.3954305 13.5,9.5 L13.5,11.5 C13.5,12.6045695 12.6048391,13.5 11.5006023,13.5 L2.49939774,13.5 C1.39516086,13.5 0.5,12.6045695 0.5,11.5 L0.5,9.5 C0.5,8.3954305 1.39516086,7.5 2.49939774,7.5 L3.54746913,7.5" id="路径"></path>
+                <line x1="6.99716106" y1="8.5" x2="6.99716106" y2="0.5" id="直线-5"></line>
+                <line x1="4" y1="3.5" x2="7" y2="0.5" id="直线-5"></line>
+                <line x1="10" y1="3.5" x2="7" y2="0.5" id="直线-5"></line>
+            </g>
+        </g>
+    </g>
+</svg>

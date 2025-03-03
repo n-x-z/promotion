@@ -11,10 +11,10 @@ service.interceptors.response.use((response) => {
     return response.data
     
 }, (error) => {
-    message.error( error.message)
+    // message.error( error.message)
   
     console.log(error, 'error')
-    return Promise.reject(error)
+    return error
 })
 const request = ({url, method, data, config}) => {
 

@@ -3,7 +3,11 @@
       <div class="filed">
           <a-form :model="formState" class="flex flex-jcsb">
                 <a-input-group style="width: 500px"  compact>
-                    <a-input style="width: 60%"   allowClear :placeholder="$t('filter.placeholderDetailInput')" v-model:value="formState.key_word" />
+                    <a-input style="width: 60%"   allowClear :placeholder="$t('filter.placeholderDetailInput')" v-model:value="formState.key_word" >
+                        <template #prefix>
+                            <SearchOutlined />
+                        </template>
+                    </a-input>
                     <a-select 
                     style="width: 20%"  
                     allowClear
@@ -60,16 +64,28 @@
                           <template #overlay>
                               <a-menu style="width: 150px">
                                   <a-menu-item>
-                                      <a @click="onDetail(record.promotion_id, record)" href="javascript:;"> {{$t('table.detail')}}</a>
+                                      <a class="operate-li" @click="onDetail(record.promotion_id, record)" href="javascript:;"> 
+                                         <img src="../../assets/images/detail.svg" />
+                                        {{$t('table.detail')}}
+                                      </a>
                                   </a-menu-item>
                                   <a-menu-item>
-                                      <a @click="onEdit(record.promotion_id, record)" href="javascript:;"> {{$t('table.edit')}}</a>
+                                      <a class="operate-li" @click="onEdit(record.promotion_id, record)" href="javascript:;"> 
+                                         <img src="../../assets/images/edit.svg" />
+                                        {{$t('table.edit')}}
+                                      </a>
                                   </a-menu-item>
                                    <a-menu-item>
-                                      <a @click="onCopy(record.promotion_id, record)" href="javascript:;"> {{$t('table.copy')}}</a>
+                                      <a class="operate-li" @click="onCopy(record.promotion_id, record)" href="javascript:;"> 
+                                        <img src="../../assets/images/copy.svg" />
+                                        {{$t('table.copy')}}
+                                      </a>
                                   </a-menu-item>
                                   <a-menu-item>
-                                      <a href="javascript:;"> {{$t('table.export')}}</a>
+                                      <a class="operate-li" href="javascript:;"> 
+                                         <img src="../../assets/images/export.svg" />
+                                        {{$t('table.export')}}
+                                      </a>
                                   </a-menu-item>
                                   <a-menu-item>
                                       <a-popconfirm
@@ -77,7 +93,10 @@
                                               title="Sure to delete?"
                                               @confirm="onDelete(record)"
                                       >
-                                          <a> {{$t('table.delete')}}</a>
+                                          <a class="operate-li">
+                                             <img src="../../assets/images/detele.svg" />
+                                             {{$t('table.delete')}}
+                                         </a>
                                       </a-popconfirm>
                                   </a-menu-item>
                               </a-menu>
@@ -155,7 +174,7 @@
     import { defineComponent, reactive, toRaw, ref, computed, onMounted, watch } from 'vue';
     import { useRouter } from 'vue-router';
     import {useI18n} from 'vue-i18n'
-    import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue';
+    import { PlusOutlined, MoreOutlined, SearchOutlined } from '@ant-design/icons-vue';
     import { 
         getPromotionList, 
         deletePromotion, 
@@ -167,7 +186,8 @@
     export default defineComponent({
         components: {
             PlusOutlined,
-            MoreOutlined
+            MoreOutlined,
+            SearchOutlined
         },
         setup() {
             const formState = reactive({

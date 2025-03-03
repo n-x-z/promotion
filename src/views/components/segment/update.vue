@@ -1,242 +1,254 @@
 <template>
-   <a-spin :spinning="spinning">
-    <a-breadcrumb class="mb10">
-        <a-breadcrumb-item>
-            <router-link to="/segment">
-                {{ $t(`menu.segment`) }}
-            </router-link>
-        </a-breadcrumb-item>
-        <a-breadcrumb-item>
-            <span>
-                <span v-if="segmentType == 'item'">{{ $t(`menu.addItem`)}}</span>
-                <span v-if="segmentType == 'customer'">{{ $t(`menu.addCustomer`)}}</span>
-                <span v-if="segmentType == 'location'">{{ $t(`menu.addLocation`)}}</span>
-                <span v-if="!isAdd">(Segment ID: {{id}})</span>
-            </span>
-        </a-breadcrumb-item>
-    </a-breadcrumb>
-    <a-form :model="formState" :rules="rules" ref="formRef" class="container-form">
-        <div class="filed">
-            <h3>{{$t('updateSegment.collocationMethod')}}</h3>
-            <!-- <a-form :model="formState" > -->
+    <div class="breadcrumb">
+        <a-breadcrumb class="mb10">
+            <a-breadcrumb-item>
+                <router-link to="/segment">
+                    {{ $t(`menu.segment`) }}
+                </router-link>
+            </a-breadcrumb-item>
+            <a-breadcrumb-item>
+                <span>
+                    <span v-if="segmentType == 'item'">{{ $t(`menu.addItem`)}}</span>
+                    <span v-if="segmentType == 'customer'">{{ $t(`menu.addCustomer`)}}</span>
+                    <span v-if="segmentType == 'location'">{{ $t(`menu.addLocation`)}}</span>
+                    <span class="bold" v-if="!isAdd">(Segment ID: {{id}})</span>
+                </span>
+            </a-breadcrumb-item>
+        </a-breadcrumb>
+    </div>
+    <a-spin :spinning="spinning">
+        <a-form :model="formState" :rules="rules" ref="formRef" class="container-form mt32">
+            <div class="filed">
+                <h3>{{$t('updateSegment.collocationMethod')}}</h3>
                 <a-row class="mt20">
                     <a-col :span="8">
                         <a-form-item :label="$t('filter.SegmentName')">
-                            <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.name" />
+                            <a-input showCount :placeholder="$t('filter.placeholderInput')" maxlength="30" v-model:value="formState.name" />
                         </a-form-item>
                     </a-col>
 
                     <a-col :span="8">
                         <a-form-item :label="$t('table.SegmentDesc')">
-                            <a-input :placeholder="$t('filter.placeholderInput')" v-model:value="formState.description" />
+                            <a-input showCount :placeholder="$t('filter.placeholderInput')"  maxlength="60" v-model:value="formState.description" />
                         </a-form-item>
                     </a-col>
                 </a-row>
                 <a-row >
                     <a-col :span="10">
                         <a-form-item :label="$t('table.SegmentSet')">
-                           
+                        
                             <a-checkbox @change="e => onChangeCheckbox(e, 'public')" v-model:checked="formState.public" >Public</a-checkbox>
-                             <a-checkbox  @change="e => onChangeCheckbox(e, 'export')" v-model:checked="formState.export" >Export</a-checkbox>
+                            <a-checkbox  @change="e => onChangeCheckbox(e, 'export')" v-model:checked="formState.export" >Export</a-checkbox>
                         </a-form-item>
                     </a-col>
                 </a-row>
-            <!-- </a-form> -->
-        </div>
-        <div class="body-content">
-            <div class="flex flex-jcsb">
-                <h3>{{$t('updateSegment.conditionalConfiguration')}}</h3>
             </div>
-            <div class="mt10 flex" >
-                <div class="mt15">{{$t('updateSegment.createConditions')}}</div>
-                
-                <div class="  segment-relative">
-                    <div :class="list.length > 1? 'segment-left' :'segment-left segment-left-border'" v-if="list.length>0">
-                        <div class="segment-block" :style="{top: list.length > 1? '0px' : '20px' }">
-                            <div @click="onConditionType('and')" :class="formState.condition_type == 'and' ? 'condition_type condition_active-top' : 'condition_type'">{{$t('updateSegment.and')}}</div>
-                            <div @click="onConditionType('or')" :class="formState.condition_type == 'or' ? 'condition_active-bottom condition_type' : 'condition_type'">{{$t('updateSegment.or')}}</div>
+            <div class="body-content">
+                <div class="flex flex-jcsb">
+                    <h3>{{$t('updateSegment.conditionalConfiguration')}}</h3>
+                </div>
+                <div class="mt10 flex" >
+                    <div class="mt15">{{$t('updateSegment.createConditions')}}</div>                
+                    <div class="segment-relative">
+                        <div :class="list.length > 1? 'segment-left' :'segment-left segment-left-border'" v-if="list.length>0">
+                            <div class="segment-block" :style="{top: list.length > 1? '0px' : '20px' }">
+                                <div @click="onConditionType('and')" :class="formState.condition_type == 'and' ? 'condition_type condition_active-top' : 'condition_type'">{{$t('updateSegment.and')}}</div>
+                                <div @click="onConditionType('or')" :class="formState.condition_type == 'or' ? 'condition_active-bottom condition_type' : 'condition_type'">{{$t('updateSegment.or')}}</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex" v-for="(item,index) in list" :key="index" :class="index == 0 ? '' : 'mt10'">
-                        <a-select 
-                           v-model:value="item.condition_name" 
-                           style="width: 250px" 
-                           class="ml10" 
-                           :placeholder="$t('filter.placeholderChange')"
-                           @change="e =>handleConditionNameChange(e,index, '1')"
-                        >
-                            <a-select-option :disabled="i.disabled" v-for="(i, num) in returnList" :key="num" >{{i.condition_name}}</a-select-option>
-                        </a-select>
-                        <a-select 
-                           v-model:value="item.condition_type" 
-                           style="width: 180px" 
-                           class="ml10" 
-                           :placeholder="$t('filter.placeholderChange')"
-                           @change="e =>handleConditionNameChange(e,index, '2')"
-                        >
-                            <a-select-option 
-                               v-for="(i, num) in item.condition_type_list" 
-                               :key="num">{{i}}</a-select-option>
-                        </a-select>
-                        
-                        <a-select 
-                           v-model:value="item.condition_value" 
-                           v-if="item.type == 'LIST'" 
-                           :mode="(item.condition_type == 'include' || item.condition_type == 'exclude') ? 'multiple' : ''"
-                           @change="e =>handleConditionNameChange(e,index, '3')" 
-                           style="width: 200px" 
-                           class="ml10" 
-                           :placeholder="$t('filter.placeholderChange')"
-                        >
-                            <a-select-option v-for="(i) in item.condition_value_list" :key="i">{{i}}</a-select-option>
-                        </a-select>
-                        <a-input-number 
-                           v-model:value="item.condition_value" 
-                           @change="e =>handleConditionNameChange(e,index, '3')" 
-                           v-if="item.type == 'number'" 
-                           :style="{width: item.condition_type == 'between' ? '95px' :'200px'}" 
-                           class="ml10" 
-                           :placeholder="$t('filter.placeholderInput')" 
-                        />
-                        <a-input-number 
-                           v-model:value="item.condition_end_value" 
-                           @change="e =>handleConditionNameChange(e,index, '4')" 
-                           v-if="item.condition_type == 'between'" 
-                           style="width: 95px" 
-                           class="ml10" 
-                           :placeholder="$t('filter.placeholderInput')" 
-                        />
-                        <a-input
-                           v-model:value="item.condition_value" 
-                           @change="e =>handleConditionNameChange(e,index, '3')" 
-                           v-if="item.type == 'string'" 
-                           style="width: 200px" 
-                           class="ml10" 
-                           :placeholder="$t('filter.placeholderInput')" 
-                        />
-                        
-                        <a-date-picker 
+                        <div class="flex" v-for="(item,index) in list" :key="index" :class="index == 0 ? '' : 'mt10'">
+                            <a-select 
+                            v-model:value="item.condition_name" 
+                            style="width: 250px" 
+                            class="ml10" 
+                            :placeholder="$t('filter.placeholderChange')"
+                            @change="e =>handleConditionNameChange(e,index, '1')"
+                            >
+                                <a-select-option :disabled="i.disabled" v-for="(i, num) in returnList" :key="num" >{{i.condition_name}}</a-select-option>
+                            </a-select>
+                            <a-select 
+                            v-model:value="item.condition_type" 
+                            style="width: 180px" 
+                            class="ml10" 
+                            :placeholder="$t('filter.placeholderChange')"
+                            @change="e =>handleConditionNameChange(e,index, '2')"
+                            >
+                                <a-select-option 
+                                v-for="(i, num) in item.condition_type_list" 
+                                :key="num">{{i}}</a-select-option>
+                            </a-select>
+                            
+                            <a-select 
                             v-model:value="item.condition_value" 
+                            v-if="item.type == 'LIST'" 
+                            :mode="(item.condition_type == 'include' || item.condition_type == 'exclude') ? 'multiple' : ''"
                             @change="e =>handleConditionNameChange(e,index, '3')" 
-                            v-if="item.type == 'Date'" 
                             style="width: 200px" 
                             class="ml10" 
-                        />
-                        
-                        <DeleteOutlined style="color: #d9d9d9" @click="onDelete(index)" class="ml10" />
-                    </div>
-                    <a-button type="link"  v-if="list.length != returnList.length" @click="onAdd" class="mt10">
-                        <template #icon><PlusOutlined /></template>
-                        {{$t('updateSegment.addConditions')}}
-                    </a-button>
-                    <a-button v-if="list.length == 0" type="link" @click="showModal" class="mt10">
-                        <template #icon><FileAddOutlined /></template>
-                        {{$t('updateSegment.importData')}}
-                    </a-button>
-                    <a-button type="link" @click="showDrawer" class="mt10">
-                        <template #icon><FileDoneOutlined /></template>
-                        {{$t('updateSegment.viewSelectedData')}}
-                    </a-button>
-                </div>
-            </div>
-
-            <div class="flex mt20">
-                <div>{{$t('updateSegment.homeworkFrequency')}}</div>
-                <div class="ml50">
-                    <a-input-group style="width: 400px" compact>
-                        <a-select 
-                           @change="e =>handleScheduleNameChange(e)"  
-                           :placeholder="$t('filter.placeholderChange')" 
-                           v-model:value="segmentSchedule.schedule_type" 
-                           style="width: 30%">
-                            <a-select-option value="D">{{$t('updateSegment.everyDate')}}</a-select-option>
-                            <a-select-option value="W">{{$t('updateSegment.everyWeek')}}</a-select-option>
-                            <a-select-option value="M">{{$t('updateSegment.everyMonth')}}</a-select-option>
-                        </a-select>
-                        <a-select 
-                           v-if="segmentSchedule.schedule_type == 'W'"
-                           style="width: 30%"  
-                           :placeholder="$t('filter.placeholderChange')" 
-                           v-model:value="segmentSchedule.schedule_value" 
-                        >
-                            <a-select-option v-for="(item, index) in weeks" :key="index" :value="Number(item.value)">{{item.label}}</a-select-option>
-                        </a-select>
-                        <a-select 
-                            v-if="segmentSchedule.schedule_type == 'M'"
-                            style="width: 30%" 
-                            :placeholder="$t('filter.placeholderChange')" 
-                            v-model:value="segmentSchedule.schedule_value" >
-                            <a-select-option v-for="(item, index) in days" :key="index" :value="Number(item.value)">{{item.label}}</a-select-option>
-                        </a-select>
-                        <a-time-picker format="HH:mm" v-model:value="segmentSchedule.schedule_time" style="width: 40%" />
-                    </a-input-group>
-                </div>
-
-            </div>
-
-
-            <a-modal v-model:visible="visible" :title="$t('updateSegment.importData')" @ok="handleOk">
-                <a-upload-dragger
-                        v-model:fileList="fileList"
-                        name="file"
-                        :multiple="true"
-                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                        @change="handleChange"
-                >
-                    <p class="ant-upload-drag-icon">
-                        <CloudUploadOutlined />
-                    </p>
-                    <p class="ant-upload-text">{{$t('updateSegment.uploadForm')}}</p>
-                    <p class="ant-upload-hint">
-                        {{$t('updateSegment.uploadDesc')}}
-                    </p>
-                </a-upload-dragger>
-            </a-modal>
-
-
-
-            <a-drawer
-                    :title="$t('updateSegment.inventory')"
-                    width="50%"
-                    placement="right"
-                    :closable="false"
-                    v-model:visible="detailVisible"
-                    :after-visible-change="afterVisibleChange"
-            >
-                <div class="flex flex-jcsb">
-                    <div>COUNT#{{paginationData.total}}</div>
-                     <a-input-group style="width: 300px"  compact>
-                        <a-input style="width: 80%"   allowClear :placeholder="$t('filter.placeholderInput')" v-model:value="paginationData.key_word" />
-                        <a-button  style="width: 20%"   type="primary" @click="onSearch">{{$t('common.query')}}</a-button>
-                    </a-input-group>
-                </div>
-                
-                
-                <a-table :pagination="false" class="mt10" :dataSource="dataSource" :columns="columns" />
-                <div class="mt20" style="text-align: right;">
-                    <a-pagination
-                    show-size-changer
-                            v-model:current="paginationData.page"
-                            :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
-                            v-model:pageSize="paginationData.page_size"
-                            :total="paginationData.total"
-                            @change="onPaginationChange"
+                            :placeholder="$t('filter.placeholderChange')"
+                            >
+                                <a-select-option v-for="(i) in item.condition_value_list" :key="i">{{i}}</a-select-option>
+                            </a-select>
+                            <a-input-number 
+                            v-model:value="item.condition_value" 
+                            @change="e =>handleConditionNameChange(e,index, '3')" 
+                            v-if="item.type == 'number'" 
+                            :style="{width: item.condition_type == 'between' ? '95px' :'200px'}" 
+                            class="ml10" 
+                            :placeholder="$t('filter.placeholderInput')" 
+                            />
+                            <a-input-number 
+                            v-model:value="item.condition_end_value" 
+                            @change="e =>handleConditionNameChange(e,index, '4')" 
+                            v-if="item.condition_type == 'between'" 
+                            style="width: 95px" 
+                            class="ml10" 
+                            :placeholder="$t('filter.placeholderInput')" 
+                            />
+                            <a-input
+                            v-model:value="item.condition_value" 
+                            @change="e =>handleConditionNameChange(e,index, '3')" 
+                            v-if="item.type == 'string'" 
+                            style="width: 200px" 
+                            class="ml10" 
+                            :placeholder="$t('filter.placeholderInput')" 
+                            />
                             
-                        />
+                            <a-date-picker 
+                                v-model:value="item.condition_value" 
+                                @change="e =>handleConditionNameChange(e,index, '3')" 
+                                v-if="item.type == 'Date'" 
+                                style="width: 200px" 
+                                class="ml10" 
+                            />
+                            
+                            <img src="../../../assets/images/detele.svg" @click="onDelete(index)" class="ml10" />
+                        </div>
+                        <a-button type="link"  v-if="list.length != returnList.length" @click="onAdd" class="mt10">
+                            <template #icon><PlusOutlined /></template>
+                            {{$t('updateSegment.addConditions')}}
+                        </a-button>
+                        <a-button v-if="list.length == 0" type="link" @click="showModal" class="mt10">
+                            <template #icon><FileAddOutlined /></template>
+                            {{$t('updateSegment.importData')}}
+                        </a-button>
+                        <a-button type="link" @click="showDrawer" class="mt10">
+                            <template #icon><FileDoneOutlined /></template>
+                            {{$t('updateSegment.viewSelectedData')}}
+                        </a-button>
+                    </div>
                 </div>
-            </a-drawer>
 
+                <div class="flex mt20">
+                    <div>{{$t('updateSegment.homeworkFrequency')}}</div>
+                    <div class="ml50">
+                        <a-input-group style="width: 400px" compact>
+                            <a-select 
+                            @change="e =>handleScheduleNameChange(e)"  
+                            :placeholder="$t('filter.placeholderChange')" 
+                            v-model:value="segmentSchedule.schedule_type" 
+                            style="width: 30%">
+                                <a-select-option value="D">{{$t('updateSegment.everyDate')}}</a-select-option>
+                                <a-select-option value="W">{{$t('updateSegment.everyWeek')}}</a-select-option>
+                                <a-select-option value="M">{{$t('updateSegment.everyMonth')}}</a-select-option>
+                            </a-select>
+                            <a-select 
+                            v-if="segmentSchedule.schedule_type == 'W'"
+                            style="width: 30%"  
+                            :placeholder="$t('filter.placeholderChange')" 
+                            v-model:value="segmentSchedule.schedule_value" 
+                            >
+                                <a-select-option v-for="(item, index) in weeks" :key="index" :value="Number(item.value)">{{item.label}}</a-select-option>
+                            </a-select>
+                            <a-select 
+                                v-if="segmentSchedule.schedule_type == 'M'"
+                                style="width: 30%" 
+                                :placeholder="$t('filter.placeholderChange')" 
+                                v-model:value="segmentSchedule.schedule_value" >
+                                <a-select-option v-for="(item, index) in days" :key="index" :value="Number(item.value)">{{item.label}}</a-select-option>
+                            </a-select>
+                            <a-time-picker format="HH:mm" v-model:value="segmentSchedule.schedule_time" style="width: 40%" />
+                        </a-input-group>
+                    </div>
+                </div>
+
+                <a-modal v-model:visible="visible" :title="$t('updateSegment.importData')" @ok="handleOk">
+                    <a-upload-dragger
+                            v-model:fileList="fileList"
+                            name="file"
+                            :multiple="true"
+                            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                            @change="handleChange"
+                    >
+                        <p class="ant-upload-drag-icon">
+                            <CloudUploadOutlined />
+                        </p>
+                        <p class="ant-upload-text">{{$t('updateSegment.uploadForm')}}</p>
+                        <p class="ant-upload-hint">
+                            {{$t('updateSegment.uploadDesc')}}
+                        </p>
+                    </a-upload-dragger>
+                </a-modal>
+
+                <a-drawer
+                        :title="$t('updateSegment.inventory')"
+                        width="50%"
+                        placement="right"
+                        :closable="false"
+                        v-model:visible="detailVisible"
+                        :after-visible-change="afterVisibleChange"
+                >
+                    <div class="flex flex-jcsb">
+                        <div>COUNT#{{paginationData.total}}</div>
+                        <a-input-group style="width: 300px"  compact>
+                            <a-input style="width: 80%"   allowClear :placeholder="$t('filter.placeholderInput')" v-model:value="paginationData.key_word" />
+                            <a-button  style="width: 20%"   type="primary" @click="onSearch">{{$t('common.query')}}</a-button>
+                        </a-input-group>
+                    </div>                   
+                    <a-table :pagination="false" class="mt10" :dataSource="dataSource" :columns="columns" />
+                    <div class="mt20" style="text-align: right;">
+                        <a-pagination
+                        show-size-changer
+                                v-model:current="paginationData.page"
+                                :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
+                                v-model:pageSize="paginationData.page_size"
+                                :total="paginationData.total"
+                                @change="onPaginationChange"
+                                
+                            />
+                    </div>
+                </a-drawer>
+            </div>
+
+            <a-form-item class="pt20" style="text-align: right">
+                <a-button type="primary" @click="onSubmit">{{$t('common.submit')}}</a-button>
+                <a-button v-if="!isAdd && formState.segment_status == 'inactive'" class="ml10" type="primary" @click="onChangeSwitch">{{$t('common.approve')}}</a-button>
+                <a-button v-if="!isAdd" class="ml10"  @click="onDeletDetail">{{$t('common.delete')}}</a-button>
+                <a-button class="ml10" @click="onCancel">{{$t('common.cancel')}}</a-button>
+            </a-form-item>
+        </a-form>
+    </a-spin>
+   
+    <a-modal v-model:open="open" title="">
+        <div v-if="isSuccess" class="modal-icon">
+            <img src="../../../assets/images/success.svg" />
+            <div>{{$t('common.addSuccess')}}</div>
         </div>
-
-        <a-form-item class="pt20" style="text-align: right">
-            <a-button type="primary" @click="onSubmit">{{$t('common.submit')}}</a-button>
-             <a-button v-if="!isAdd && formState.segment_status == 'inactive'" class="ml10" type="primary" @click="onChangeSwitch">{{$t('common.approve')}}</a-button>
-             <a-button v-if="!isAdd" class="ml10"  @click="onDeletDetail">{{$t('common.delete')}}</a-button>
-             <a-button class="ml10" @click="onCancel">{{$t('common.cancel')}}</a-button>
-        </a-form-item>
-    </a-form>
-   </a-spin>
-
+        <div v-else class="modal-icon">
+            <img src="../../../assets/images/fail.svg" />
+            <div>{{$t('common.addFail')}}</div>
+        </div>
+        
+        <template #footer>
+            <div v-if="isSuccess" style="display: flex;justify-content: center;">
+                <a-button shape="round" @click="handleCancel">{{$t('common.back')}}</a-button>
+                <a-button shape="round" class="ml40" type="primary" @click="handleModalOk">{{$t('common.stayHere')}}</a-button>
+            </div>
+            <div v-else style="display: flex;justify-content: center;">
+                <a-button  shape="round" @click="handleModalOk">{{$t('common.close')}}</a-button>
+            </div>
+      </template>   
+    </a-modal>
 </template>
 
 <script>
@@ -258,8 +270,7 @@
         submitSegments, 
         getSegmentsDetail,
         getSegmentsModalDetail,
-        deleteSegments,
-        updateStatusSegments
+        deleteSegments
     } from '@/api/segments'
 
     const plainOptions = ['Public', 'Export'];
@@ -296,6 +307,8 @@
             const visible = ref(false);
             const detailVisible = ref(false);
             const formRef = ref();
+            const open = ref(false)
+            const isSuccess = ref(false)
 
             let paginationData = ref({
                 page: 1,
@@ -325,10 +338,8 @@
             const afterVisibleChange = bool => {
                 console.log('visible', bool);
             };
-            const showDrawer = () => {
-                
-                if(id.value != 0 ){
-                
+            const showDrawer = () => {               
+                if(id.value != 0 ){               
                     getSegmentsModalDetail({
                         segment_type: segmentType,
                         segment_id: id.value,
@@ -354,8 +365,7 @@
                 visible.value = false;
             };
 
-            const onPaginationChange = (pageNumber, pageSize) => {
-         
+            const onPaginationChange = (pageNumber, pageSize) => {        
                 paginationData.value.page = pageNumber || 1
                 paginationData.value.page_size = pageSize
                 showDrawer()
@@ -375,7 +385,6 @@
                 }).then(res => {
                     returnList.value = res
                     if(id.value != 0 ){
-
                         spinning.value = true
                         getSegmentsDetail({
                             segment_type: segmentType,
@@ -388,7 +397,7 @@
                     }
                 }) 
             })
-
+            // 回显的详情数据
             const showDetail = (res) => {
                 formState.name = res.segments[0].name
                 formState.description = res.segments[0].description
@@ -397,19 +406,16 @@
                 formState.create_type = res.segments[0].create_type
                 formState.segment_status = res.segments[0].segment_status
                 formState.condition_type = res.segments[0].condition_type
-                formState.segment_id = res.segments[0].segment_id
-                
+                formState.segment_id = res.segments[0].segment_id         
                 var arr = []
                 res.segments_condition.forEach((item, index) => {
                     returnList.value.forEach((item1,num) => {
-
                         if(item.condition_name == item1.condition_name){
                             var value = item.condition_value
                             var endvalue = item.condition_value.split(',')[1]
                             if(item.condition_type == 'include'){
                                 value = item.condition_value.split(',')
-                            } else {
-                                
+                            } else {                               
                                 value = item.condition_value.split(',')[0]
                             }
                             if(item1.value_type == 'Date'){
@@ -430,29 +436,23 @@
                     }) 
                 })
                 list.value = arr
-                getDisabledList()
-                
+                getDisabledList()               
                 segmentSchedule.value.schedule_type = res.segment_schedule[0].schedule_type
                 segmentSchedule.value.schedule_value = res.segment_schedule[0].schedule_value
                 segmentSchedule.value.schedule_time = dayjs(res.segment_schedule[0].schedule_time, 'HH:mm')
-
             }
 
             const onAdd = () => {
-                list.value.push({list: returnList.value, value_type: 'LIST'})
-                
+                list.value.push({list: returnList.value, value_type: 'LIST'})                
             };
 
-            const onDelete = (num) => {
-            
+            const onDelete = (num) => {           
                 checkList.value = checkList.value.filter((item, index)=> item != list.value[num].condition_name)
                 list.value = list.value.filter((item, index)=> index != num)
-                getDisabledList()
-                
+                getDisabledList()                
             };
-
+            // 输入框的焦点事件后的处理
             const handleConditionNameChange = (e, index, type) => {
-                console.log(e, 'e')
                 if(type == '1'){
                     current.value = e
                     list.value[index].type = returnList.value[e].value_type
@@ -476,36 +476,32 @@
                         })      
                     }
                 } else if(type == '3'){
-
                     if(!list.value[index].condition_name){
                         message.info('请先选择前一个条件')
                         return
                     }else{
                         list.value[index].list.forEach((item, i) => {
                             if(item.condition_name == list.value[index].condition_name){
-                  
                                 if(list.value[index].type == 'LIST'){
                                     list.value[index].condition_value = e
                                 } else if(list.value[index].type == 'number') {
                                     list.value[index].condition_value = String(e)         
-                                }
-                               
+                                }                              
                             }
                         })      
                     }
                 } else if(type == '4'){
                     list.value[index].list.forEach((item, i) => {
-                            if(item.condition_name == list.value[index].condition_name){
-                                if(list.value[index].condition_type == 'between'){
-                                    list.value[index].condition_end_value = String(e)   
-                                }
-                               
+                        if(item.condition_name == list.value[index].condition_name){
+                            if(list.value[index].condition_type == 'between'){
+                                list.value[index].condition_end_value = String(e)   
                             }
-                     })      
+                            
+                        }
+                    })      
                 }
-                
             }
-
+            // 下拉框是否可选
             const getDisabledList = () => {
                 returnList.value.forEach(item => {
                       if(checkList.value.includes(item.condition_name)){
@@ -514,6 +510,15 @@
                           item.disabled = false
                       }
                   })
+            }
+
+             const handleCancel = () => {
+                router.push('/segment/list')
+            }
+
+            const handleModalOk = () => {
+                open.value = false
+                router.push('/segment/'+segmentType+'/update/'+id.value)
             }
 
             const onSubmit = (type) => {
@@ -542,7 +547,7 @@
                             formState.segment_id = 0
                         }
                         if(type){
-                             formState.promotion_status = 'active'
+                             formState.segment_status = 'active'
                         }
                         var data = {
                             segment: toRaw(formState),
@@ -553,34 +558,33 @@
                          spinning.value = true
                         submitSegments(data).then(res => {
                             spinning.value = false
+                            open.value = true
                             if(res.code == 200){
-
-                                message.success(res.message)
-                                isAdd.value = false
                                 id.value=res.segment_id
-                                router.push('/segment/'+segmentType+'/update/'+res.segment_id)
+                                isAdd.value = false
+                                isSuccess.value = true
+                                
+                                // router.push('/segment/'+segmentType+'/update/'+res.segment_id)
                             }else{
-                                message.error(res.message)
-                            }
-                            
+                                isSuccess.value = false
+                                if(type){
+                                    formState.segment_status = 'inactive'
+                                }
+                            } 
                         })
                 })
                 .catch(error => {
                     console.log('error', error);
-                });
-                
+                });    
             }
-
             
             const onChangeCheckbox = (e, type) => {
                 formState[type]=e.target.checked
-
             }
 
             const onChangeSwitch = () => {
                  onSubmit('1')
             }
-
 
             const onCancel = () => {
                  router.push('/segment/list')
@@ -600,7 +604,6 @@
                 })
                
             };
-
 
             return {
                 current,
@@ -637,7 +640,11 @@
                 formRef,
                 paginationData,
                 onPaginationChange,
-                onSearch
+                onSearch,
+                open,
+                handleCancel,
+                handleModalOk,
+                isSuccess
             };
         },
     });
@@ -687,16 +694,13 @@
          color: #999;
         border-radius: 5px;
     }
-    .condition_type{
-       
+    .condition_type{      
         width: 25px;
         height: 30px;
         font-size: 12px;
         text-align: center;
         line-height: 30px;
         cursor: pointer;
-       
-       
     }
     .ml50{
         margin-left: 50px;

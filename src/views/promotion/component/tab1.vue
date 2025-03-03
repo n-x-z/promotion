@@ -1,290 +1,301 @@
 <template>
     <div class="container-form">
         <div class="body-content">
-            <div class="">
-                <a-row>
-                    <a-col :span="8">
-                        <div class="flex flex-jcsb">
-                            <h3>{{$t('updatePromotion.promotionConditions')}}</h3>
-                        </div>
-                        <a-divider style="margin: 10px 0 20px 0" />
+            <a-row>
+                <a-col :span="8">
+                    <div class="flex flex-jcsb">
+                        <h3>{{$t('updatePromotion.promotionConditions')}}</h3>
+                    </div>
+                    <a-divider style="margin: 10px 0 20px 0" />
 
-                        <div v-for="(item,index) in returnList" :key="index" :class="index == 0 ? '' : 'mt10'">
-                            <a-form-item  name="condition_type" v-if="item.value_type == 'LIST' && item.condition_name == 'Condition Type'" :label="item.condition_name">
-                                <a-select 
-                                    :disabled="disabled"
-                                    v-model:value="promotionCondition.condition_type"
-                                    :placeholder="$t('filter.placeholderChange')"
-                                    @change="onChange"
-                                >
-                                    <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
-                                </a-select>
-                            </a-form-item>
-                            <a-form-item name="threshold_style" v-if="item.value_type == 'LIST' && item.condition_name == 'Threshold Style'" :label="item.condition_name">
-                                <a-select 
+                    <div v-for="(item,index) in returnList" :key="index" :class="index == 0 ? '' : 'mt10'">
+                        <a-form-item  name="condition_type" v-if="item.value_type == 'LIST' && item.condition_name == 'Condition Type'" :label="item.condition_name">
+                            <a-select 
                                 :disabled="disabled"
-                                    v-model:value="promotionCondition.threshold_style"
-                                    :placeholder="$t('filter.placeholderChange')"
-                                     @change="onChange"
-                                >
-                                    <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
-                                </a-select>
-                            </a-form-item>
-                            <a-form-item name="threshold_min" v-if="item.condition_name == 'Threshold Min' && (promotionCondition.threshold_style == 'between' || promotionCondition.threshold_style == '<')" :label="item.condition_name">
-                                <a-input-number :disabled="disabled"  @change="onChange" style="width:100%"  :placeholder="$t('filter.placeholderInput')" v-model:value="promotionCondition.threshold_min" />
-                            </a-form-item>
-                            <a-form-item name="threshold_max" v-if="item.condition_name == 'Threshold Max' && (promotionCondition.threshold_style == 'between' || promotionCondition.threshold_style == '>')" :label="item.condition_name">
-                                <a-input-number :disabled="disabled"  @change="onChange" style="width:100%"  :placeholder="$t('filter.placeholderInput')" v-model:value="promotionCondition.threshold_max" />
-                            </a-form-item>
-
-                        </div>
-                    </a-col>
-                    <a-col :span="2" style="text-align: center">
-                        <a-divider style="height: 100%" type="vertical" />
-                    </a-col>
-                    <a-col :span="14">
-                        <div class="flex flex-jcsb">
-                            <h3>{{$t('updatePromotion.ItemConditionManagement')}}</h3>
-                        </div>
-                        <a-divider style="margin: 10px 0 10px 0" />
-
-                        <a-row :gutter="16">
-                            <a-col :span="12">
-                                <h4>{{$t('updatePromotion.includesItems')}}</h4>
-                                <a-card v-for="(item, index) in conditionIncludeList" :key="index" class="mt10">
-                                    <a-row :gutter="16">
-                                       <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">ID</div>
-                                                <div class="card-desc fl">{{item.segment_id}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">COUNT#</div>
-                                                <div class="card-desc fl">{{item.sub_count}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="24">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
-                                                <div class="card-desc fl">{{item.name}}</div>
-                                            </div>
-                                        </a-col>
-                                    </a-row>
-                                    <div class="card-delete">
-                                        <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete('Condition', 1,index)" class="ml10" />
-                                    </div>
-                                </a-card>
-                                <a-button v-if="!disabled" class="add-button" type="link" @click="showModal('Condition', 1)">
-                                    <template #icon><PlusOutlined /></template>
-                                    {{$t('updatePromotion.addItemSegments')}}
-                                </a-button>
-                            </a-col>
-                            <a-col :span="12">
-                                <h4>{{$t('updatePromotion.excludeItems')}}</h4>
-                                <a-card v-for="(item, index) in conditionNoIncludeList" :key="index" class="mt10">
-                                    <a-row :gutter="16">
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">ID</div>
-                                                <div class="card-desc fl">{{item.segment_id}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">COUNT#</div>
-                                                <div class="card-desc fl">{{item.sub_count}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="24">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
-                                                <div class="card-desc fl">{{item.name}}</div>
-                                            </div>
-                                        </a-col>
-                                    </a-row>
-                                    <div class="card-delete">
-                                        <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete('Condition', 0, index)" class="ml10" />
-                                    </div>
-                                </a-card>
-                                <a-button class="add-button" v-if="!disabled" type="link" @click="showModal('Condition', 0)">
-                                    <template #icon><PlusOutlined /></template>
-                                    {{$t('updatePromotion.addItemSegments')}}
-                                </a-button>
-                            </a-col>
-                        </a-row>
-                    </a-col>
-                </a-row>
-            </div>
-        </div>
-        <div class="body-content">
-            <div class="">
-                <a-row>
-                    <a-col :span="8">
-                        <div class="flex flex-jcsb">
-                            <h3>{{$t('updatePromotion.promotionResults')}}</h3>
-                        </div>
-                        <a-divider style="margin: 10px 0 20px 0" />
-                        <div v-for="(item,index) in resultList" :key="index" :class="index == 0 ? '' : 'mt10'">
-                            <a-form-item name="overlap"  v-if="item.value_type == 'CheckBox'" :label="item.result_name">
-                                 <a-checkbox  :disabled="disabled"  @change="onChangeCheckbox" v-model:checked="promotionResult.overlap" ></a-checkbox>
-                            </a-form-item>
-                            <a-form-item name="apply_type"  v-if="item.value_type == 'LIST' && item.result_name == 'Apply Type'" :label="item.result_name">
-                                <a-select 
-                                    v-model:value="promotionResult.apply_type"
-                                    :placeholder="$t('filter.placeholderChange')"
-                                     @change="onChange"
-                                     :disabled="disabled"
-                                >
-                                    <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
-                                </a-select>
-                            </a-form-item>
-                             <a-form-item name="discount_type" v-if="item.value_type == 'LIST' && item.result_name == 'Discount Type'" :label="item.result_name">
-                                <a-select 
-                                    :disabled="disabled"
-                                    v-model:value="promotionResult.discount_type"
-                                    :placeholder="$t('filter.placeholderChange')"
+                                v-model:value="promotionCondition.condition_type"
+                                :placeholder="$t('filter.placeholderChange')"
+                                @change="onChange"
+                            >
+                                <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item name="threshold_style" v-if="item.value_type == 'LIST' && item.condition_name == 'Threshold Style'" :label="item.condition_name">
+                            <a-select 
+                            :disabled="disabled"
+                                v-model:value="promotionCondition.threshold_style"
+                                :placeholder="$t('filter.placeholderChange')"
                                     @change="onChange"
-                                >
-                                    <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
-                                </a-select>
-                            </a-form-item>
-                            <a-form-item name="discount_value" v-if="item.value_type == 'number'" :label="item.result_name">
-                                <a-input-number :disabled="disabled"  @change="onChange" style="width:100%" :placeholder="$t('filter.placeholderInput')" v-model:value="promotionResult.discount_value" />
-                            </a-form-item>
+                            >
+                                <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item name="threshold_min" v-if="item.condition_name == 'Threshold Min' && (promotionCondition.threshold_style == 'between' || promotionCondition.threshold_style == '<')" :label="item.condition_name">
+                            <a-input-number :disabled="disabled"  @change="onChange" style="width:100%"  :placeholder="$t('filter.placeholderInput')" v-model:value="promotionCondition.threshold_min" />
+                        </a-form-item>
+                        <a-form-item name="threshold_max" v-if="item.condition_name == 'Threshold Max' && (promotionCondition.threshold_style == 'between' || promotionCondition.threshold_style == '>')" :label="item.condition_name">
+                            <a-input-number :disabled="disabled"  @change="onChange" style="width:100%"  :placeholder="$t('filter.placeholderInput')" v-model:value="promotionCondition.threshold_max" />
+                        </a-form-item>
 
-                        </div>
-                    </a-col>
-                    <a-col :span="2" style="text-align: center">
-                        <a-divider style="height: 100%" type="vertical" />
-                    </a-col>
-                    <a-col :span="14">
-                        <div class="flex flex-jcsb">
-                            <h3>{{$t('updatePromotion.ItemResultsManagement')}}</h3>
-                        </div>
-                        <a-divider style="margin: 10px 0 10px 0" />
-                        <a-row :gutter="16">
-                            <a-col :span="12" >
-                                <h4>{{$t('updatePromotion.includesItems')}}</h4>
-                                <a-card v-for="(item, index) in resultIncludeList" class="mt10" :key="index">
-                                    <a-row :gutter="16">
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">ID</div>
-                                                <div class="card-desc fl">{{item.segment_id}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">COUNT#</div>
-                                                <div class="card-desc fl">{{item.sub_count}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="24">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
-                                                <div class="card-desc fl">{{item.name}}</div>
-                                            </div>
-                                        </a-col>
-                                    </a-row>
-                                    <div class="card-delete">
-                                        <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete('Result', 1, index)" class="ml10" />
-                                    </div>
-                                </a-card>
-                                <a-button type="link" class="add-button" v-if="!disabled" @click="showModal('Result', 1)">
-                                    <template #icon><PlusOutlined /></template>
-                                    {{$t('updatePromotion.addItemSegments')}}
-                                </a-button>
-                            </a-col>
-                            <a-col :span="12">
-                                <h4>{{$t('updatePromotion.excludeItems')}}</h4>
-                                <a-card v-for="(item, index) in resultNoIncludeList" class="mt10" :key="index">
-                                    <a-row :gutter="16">
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">ID</div>
-                                                <div class="card-desc fl">{{item.segment_id}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">COUNT#</div>
-                                                <div class="card-desc fl">{{item.sub_count}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="24">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
-                                                <div class="card-desc fl">{{item.name}}</div>
-                                            </div>
-                                        </a-col>
-                                    </a-row>
-                                    <div class="card-delete">
-                                        <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete('Result', 0, index)" class="ml10" />
-                                    </div>
-                                </a-card>
-                                <a-button type="link" class="add-button" v-if="!disabled" @click="showModal('Result', 0)">
-                                    <template #icon><PlusOutlined /></template>
-                                    {{$t('updatePromotion.addItemSegments')}}
-                                </a-button>
-                            </a-col>
-                        </a-row>
-                    </a-col>
-                </a-row>
-            </div>
-        </div>
-        <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.addItemSegments')" @ok="handleOk">
-                <a-divider style="margin: 0 0 20px 0" />
-                <div class="flex">
-                    <a-input allowClear v-model:value="formState.key_word" :placeholder="$t('filter.placeholderDetailInput')" >
-                        <template #icon>
-                            <SearchOutlined />
-                        </template>
-                    </a-input>
+                    </div>
+                </a-col>
+                <a-col :span="2" style="text-align: center">
+                    <a-divider style="height: 100%" type="vertical" />
+                </a-col>
+                <a-col :span="14">
+                    <div class="flex flex-jcsb">
+                        <h3>{{$t('updatePromotion.ItemConditionManagement')}}</h3>
+                    </div>
+                    <a-divider style="margin: 10px 0 10px 0" />
 
-                    <a-button type="primary" @click="onSearch" class="ml10">{{$t('common.query')}}</a-button>
-                </div>
+                    <a-row :gutter="16">
+                        <a-col :span="12">
+                            <h4 class="include-title">
+                                <img src="../../../assets/images/include.svg" />
+                                {{$t('updatePromotion.includesItems')}}
+                            </h4>
+                            <a-card v-for="(item, index) in conditionIncludeList" :key="index" class="mt10">
+                                <a-row :gutter="16">
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">ID</div>
+                                            <div class="card-desc fl">{{item.segment_id}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">COUNT#</div>
+                                            <div class="card-desc fl">{{item.sub_count}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="24">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                            <div class="card-desc fl">{{item.name}}</div>
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                                <div class="card-delete">
+                                    <img src="../../../assets/images/detele.svg" v-if="!disabled" @click="onDelete('Condition', 1, index)" class="ml10" />
 
-                <h4 class="mt10">{{$t('updatePromotion.selectedSegments')}}</h4>
-                <a-spin :spinning="spinning">
-                    <a-row class="mt10" :gutter="16">
-                        <a-col class="mt10" :span="12" v-for="(item, index) in dataSource" :key="index">
-                            <a-card :class="item.checked ? 'borderactive' : ''" @click="onClickCard(item, index)" >
-                                <div class="inline-block card-title">
-                                    <div class="card-name fl">ID</div>
-                                    <div class="card-desc fl">{{item.segment_id}}</div>
-                                </div>
-                                <div class="inline-block card-title">
-                                    <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
-                                    <div class="card-desc fl">{{item.name}}</div>
-                                </div>
-                                <div class="inline-block card-title">
-                                    <div class="card-name fl">COUNT#</div>
-                                    <div class="card-desc fl">{{item.sub_count}}</div>
                                 </div>
                             </a-card>
+                            <a-button v-if="!disabled" class="add-button" type="link" @click="showModal('Condition', 1)">
+                                <template #icon><PlusOutlined /></template>
+                                {{$t('updatePromotion.addItemSegments')}}
+                            </a-button>
+                        </a-col>
+                        <a-col :span="12">
+                            <h4 class="include-title">
+                                <img src="../../../assets/images/noinclude.svg" />
+                                {{$t('updatePromotion.excludeItems')}}
+                            </h4>
+                            <a-card v-for="(item, index) in conditionNoIncludeList" :key="index" class="mt10">
+                                <a-row :gutter="16">
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">ID</div>
+                                            <div class="card-desc fl">{{item.segment_id}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">COUNT#</div>
+                                            <div class="card-desc fl">{{item.sub_count}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="24">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                            <div class="card-desc fl">{{item.name}}</div>
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                                <div class="card-delete">
+                                    <img src="../../../assets/images/detele.svg" v-if="!disabled" @click="onDelete('Condition', 0, index)" class="ml10" />
+
+                                </div>
+                            </a-card>
+                            <a-button class="add-button" v-if="!disabled" type="link" @click="showModal('Condition', 0)">
+                                <template #icon><PlusOutlined /></template>
+                                {{$t('updatePromotion.addItemSegments')}}
+                            </a-button>
                         </a-col>
                     </a-row>
-                </a-spin>
-                <div class="mt10">
-                    <a-pagination
-                        v-model:current="paginationData.page"
-                        :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
-                        v-model:pageSize="paginationData.page_size"
-                        :total="paginationData.total"
-                        @change="onSizeChange"
-                        
-                    />
-                </div>
+                </a-col>
+            </a-row>
+        </div>
+        <div class="body-content">
+            <a-row>
+                <a-col :span="8">
+                    <div class="flex flex-jcsb">
+                        <h3>{{$t('updatePromotion.promotionResults')}}</h3>
+                    </div>
+                    <a-divider style="margin: 10px 0 20px 0" />
+                    <div v-for="(item,index) in resultList" :key="index" :class="index == 0 ? '' : 'mt10'">
+                        <a-form-item name="overlap"  v-if="item.value_type == 'CheckBox'" :label="item.result_name">
+                                <a-checkbox  :disabled="disabled"  @change="onChangeCheckbox" v-model:checked="promotionResult.overlap" ></a-checkbox>
+                        </a-form-item>
+                        <a-form-item name="apply_type"  v-if="item.value_type == 'LIST' && item.result_name == 'Apply Type'" :label="item.result_name">
+                            <a-select 
+                                v-model:value="promotionResult.apply_type"
+                                :placeholder="$t('filter.placeholderChange')"
+                                    @change="onChange"
+                                    :disabled="disabled"
+                            >
+                                <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                            <a-form-item name="discount_type" v-if="item.value_type == 'LIST' && item.result_name == 'Discount Type'" :label="item.result_name">
+                            <a-select 
+                                :disabled="disabled"
+                                v-model:value="promotionResult.discount_type"
+                                :placeholder="$t('filter.placeholderChange')"
+                                @change="onChange"
+                            >
+                                <a-select-option v-for="(item, index) in item.condition_value" :key="index" :value="item">{{item}}</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                        <a-form-item name="discount_value" v-if="item.value_type == 'number'" :label="item.result_name">
+                            <a-input-number :disabled="disabled"  @change="onChange" style="width:100%" :placeholder="$t('filter.placeholderInput')" v-model:value="promotionResult.discount_value" />
+                        </a-form-item>
 
-            </a-modal>  
+                    </div>
+                </a-col>
+                <a-col :span="2" style="text-align: center">
+                    <a-divider style="height: 100%" type="vertical" />
+                </a-col>
+                <a-col :span="14">
+                    <div class="flex flex-jcsb">
+                        <h3>{{$t('updatePromotion.ItemResultsManagement')}}</h3>
+                    </div>
+                    <a-divider style="margin: 10px 0 10px 0" />
+                    <a-row :gutter="16">
+                        <a-col :span="12" >
+                            <h4 class="include-title">
+                                <img src="../../../assets/images/include.svg" />
+                                {{$t('updatePromotion.includesItems')}}
+                            </h4>
+                            <a-card v-for="(item, index) in resultIncludeList" class="mt10" :key="index">
+                                <a-row :gutter="16">
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">ID</div>
+                                            <div class="card-desc fl">{{item.segment_id}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">COUNT#</div>
+                                            <div class="card-desc fl">{{item.sub_count}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="24">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                            <div class="card-desc fl">{{item.name}}</div>
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                                <div class="card-delete">
+                                    <img src="../../../assets/images/detele.svg" v-if="!disabled" @click="onDelete('Result', 1, index)" class="ml10" />
+
+                                </div>
+                            </a-card>
+                            <a-button type="link" class="add-button" v-if="!disabled" @click="showModal('Result', 1)">
+                                <template #icon><PlusOutlined /></template>
+                                {{$t('updatePromotion.addItemSegments')}}
+                            </a-button>
+                        </a-col>
+                        <a-col :span="12">
+                                <h4 class="include-title">
+                                <img src="../../../assets/images/noinclude.svg" />
+                                {{$t('updatePromotion.excludeItems')}}
+                            </h4>
+                            <a-card v-for="(item, index) in resultNoIncludeList" class="mt10" :key="index">
+                                <a-row :gutter="16">
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">ID</div>
+                                            <div class="card-desc fl">{{item.segment_id}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">COUNT#</div>
+                                            <div class="card-desc fl">{{item.sub_count}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="24">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                            <div class="card-desc fl">{{item.name}}</div>
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                                <div class="card-delete">
+                                        <img src="../../../assets/images/detele.svg" v-if="!disabled" @click="onDelete('Result', 0, index)" class="ml10" />
+
+                                </div>
+                            </a-card>
+                            <a-button type="link" class="add-button" v-if="!disabled" @click="showModal('Result', 0)">
+                                <template #icon><PlusOutlined /></template>
+                                {{$t('updatePromotion.addItemSegments')}}
+                            </a-button>
+                        </a-col>
+                    </a-row>
+                </a-col>
+            </a-row>
+        </div>
+        <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.addItemSegments')" @ok="handleOk">
+            <a-divider style="margin: 0 0 20px 0" />
+            <div class="flex">
+                <a-input allowClear v-model:value="formState.key_word" :placeholder="$t('filter.placeholderDetailInput')" >
+                    <template #icon>
+                        <SearchOutlined />
+                    </template>
+                </a-input>
+
+                <a-button type="primary" @click="onSearch" class="ml10">{{$t('common.query')}}</a-button>
+            </div>
+
+            <h4 class="mt10">{{$t('updatePromotion.selectedSegments')}}</h4>
+            <a-spin :spinning="spinning">
+                <a-row class="mt10" :gutter="16">
+                    <a-col class="mt10" :span="12" v-for="(item, index) in dataSource" :key="index">
+                        <a-card :class="item.checked ? 'borderactive' : ''" @click="onClickCard(item, index)" >
+                            <div class="inline-block card-title">
+                                <div class="card-name fl">ID</div>
+                                <div class="card-desc fl">{{item.segment_id}}</div>
+                            </div>
+                            <div class="inline-block card-title">
+                                <div class="card-name fl">{{$t('updatePromotion.name')}}</div>
+                                <div class="card-desc fl">{{item.name}}</div>
+                            </div>
+                            <div class="inline-block card-title">
+                                <div class="card-name fl">COUNT#</div>
+                                <div class="card-desc fl">{{item.sub_count}}</div>
+                            </div>
+                        </a-card>
+                    </a-col>
+                </a-row>
+            </a-spin>
+            <div class="mt10">
+                <a-pagination
+                    v-model:current="paginationData.page"
+                    :show-total="total => `${$t('table.total')} ${paginationData.total} ${$t('table.items')}`"
+                    v-model:pageSize="paginationData.page_size"
+                    :total="paginationData.total"
+                    @change="onSizeChange"
+                    
+                />
+            </div>
+        </a-modal>  
     </div>
 
 </template>
 
 <script>
-    import { defineComponent, defineEmits, ref, onMounted, toRefs, inject, watch, defineProps } from 'vue';
+    import { defineComponent, defineEmits, ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import { PlusOutlined, MoreOutlined, DeleteOutlined } from '@ant-design/icons-vue';
     import { getSegmentsList } from '@/api/segments'
@@ -357,14 +368,11 @@
 
                
             })
-
+            // 回显的详情数据
             const showDetail = () => {
                 promotionCondition.value = props.promotionConditionData
-               
                 promotionResult.value = props.promotionResultData
                 promotionResult.value.overlap = props.promotionResultData.overlap == 1
-
-                 console.log(promotionResult.value.overlap, '3221121')
                 if(props.promotionItemSegments.length > 0){
                     conditionIncludeList.value = props.promotionItemSegments.filter(item => item.include == 1 && item.item_type == 'Condition')
                     conditionNoIncludeList.value = props.promotionItemSegments.filter(item => item.include == 0 && item.item_type == 'Condition')
@@ -372,7 +380,7 @@
                     resultNoIncludeList.value = props.promotionItemSegments.filter(item => item.include == 0 && item.item_type == 'Result')
                 }
             }
-
+           // 弹框上的列表数据
             const init = () => {
                 const data = {
                      segment_type: 'item',
@@ -435,9 +443,9 @@
                 promotionResult.value.overlap = e.target.checked
                onUpdate()
             }
+            // 
             const onUpdate = () => {
-               
-                const promotionItemSegments = conditionIncludeList.value.concat(conditionNoIncludeList.value, resultIncludeList.value, resultNoIncludeList.value);
+                const promotionItemSegments = JSON.parse(JSON.stringify(conditionIncludeList.value.concat(conditionNoIncludeList.value, resultIncludeList.value, resultNoIncludeList.value)));
                 const data = JSON.parse(JSON.stringify(promotionResult.value))
                 data.overlap = data.overlap ? 1 : 0
                 emit('onEmit', {

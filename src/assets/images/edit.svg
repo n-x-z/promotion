@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编辑</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="画板" transform="translate(-358, -135)" stroke="#979797">
+            <g id="编组-12备份" transform="translate(356.3, 134.3)">
+                <line x1="2.93053613" y1="13.9961277" x2="14.9305361" y2="13.9961277" id="直线-4" stroke-linecap="round"></line>
+                <g id="编组-11" transform="translate(7.4246, 7.4246) rotate(-315) translate(-7.4246, -7.4246)translate(4.4246, -0.0754)">
+                    <path d="M4,0.5 C4.41421356,0.5 4.78921356,0.667893219 5.06066017,0.939339828 C5.33210678,1.21078644 5.5,1.58578644 5.5,2 L5.5,11.1715729 C5.5,11.5693976 5.34196474,11.9509285 5.06066017,12.232233 L3,14.2928932 L0.939339828,12.232233 C0.658035261,11.9509285 0.5,11.5693976 0.5,11.1715729 L0.5,2 C0.5,1.58578644 0.667893219,1.21078644 0.939339828,0.939339828 C1.21078644,0.667893219 1.58578644,0.5 2,0.5 Z" id="矩形"></path>
+                    <line x1="0.5" y1="3.5" x2="5.5" y2="3.5" id="直线-3" stroke-linecap="square"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

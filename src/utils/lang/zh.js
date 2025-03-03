@@ -9,7 +9,12 @@ export default{
        login: '登录',
        userLogin: '用户名密码登录',
         personaCenter: '个人中心',
-        logOut: '退出登录'
+        logOut: '退出登录',
+        back: '返回列表',
+        addSuccess: '创建成功',
+        addFail: '创建失败',
+        close: '关闭',
+        stayHere: '留在这里'
 
     },
     menu: {
@@ -46,8 +51,9 @@ export default{
         periodicity: '周期性',
         placeholderInput: '请输入',
         placeholderChange: '请选择',
-        active: '开启',
+        active: '激活',
         inactive: '关闭',
+        inUse: '使用',
         all: '全部',
         placeholderDetailInput: '名称/描述/创建人',
         required: '必填项'
@@ -80,7 +86,7 @@ export default{
         sex: '性别',
         area: '地区',
         customerLevel: '会员级别',
-        total: '共',
+        total: '总计',
         items: '条',
         startingTime: '起始时间',
         copy: '复制',

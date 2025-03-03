@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>删除</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="画板" transform="translate(-357.5, -267)" stroke="#979797">
+            <g id="编组-7" transform="translate(357.5, 267)">
+                <g id="编组-14备份" transform="translate(1.5, 0)">
+                    <g id="详情备份-6" transform="translate(0.5, 0)">
+                        <path d="M9.5,3 L9.5,12 C9.5,12.4142136 9.33210678,12.7892136 9.06066017,13.0606602 C8.78921356,13.3321068 8.41421356,13.5 8,13.5 L2,13.5 C1.58578644,13.5 1.21078644,13.3321068 0.939339828,13.0606602 C0.667893219,12.7892136 0.5,12.4142136 0.5,12 L0.5,3 L9.5,3 Z" id="矩形"></path>
+                        <path d="M7.5,0.5 L7.5,1.5 C7.5,1.91421356 7.33210678,2.28921356 7.06066017,2.56066017 C6.78921356,2.83210678 6.41421356,3 6,3 L4,3 C3.58578644,3 3.21078644,2.83210678 2.93933983,2.56066017 C2.66789322,2.28921356 2.5,1.91421356 2.5,1.5 L2.5,0.5 L7.5,0.5 Z" id="矩形备份-9" transform="translate(5, 1.75) rotate(-180) translate(-5, -1.75)"></path>
+                        <path d="M3,6.5 L7,6.5 M3,9.5 L7,9.5" id="形状结合" stroke-linecap="round" transform="translate(5, 8) rotate(-270) translate(-5, -8)"></path>
+                    </g>
+                    <line x1="0" y1="3" x2="11" y2="3" id="直线-6" stroke-linecap="round"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

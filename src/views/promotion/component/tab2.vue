@@ -1,92 +1,96 @@
 <template>
     <div class="container-form">
-
         <div class="body-content">
-            <div class="">
-                <a-row>
-                    <a-col :span="11">
-                        <h4>{{$t('updatePromotion.includesLocation')}}</h4>
-                        <a-divider style="margin: 10px 0 10px 0" />
-                        <a-row :gutter="16">
-                            <a-col :span="12" v-for="(item, index) in includeList" :key="index" >
-                                <a-card class="mt10">
-                                    <a-row :gutter="16">
-                                       <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">ID</div>
-                                                <div class="card-desc fl">{{item.segment_id}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="12">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">COUNT#</div>
-                                                <div class="card-desc fl">{{item.sub_count}}</div>
-                                            </div>
-                                        </a-col>
-                                        <a-col :span="24">
-                                            <div class="inline-block card-title">
-                                                <div class="card-name fl">名称</div>
-                                                <div class="card-desc fl">{{item.name}}</div>
-                                            </div>
-                                        </a-col>
-                                    </a-row>
-                                    <div class="card-delete">
-                                        <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete(index)" class="ml10" />
-                                    </div>
-                                </a-card>
-                            </a-col>
-                           
-                        </a-row>
-                         <a-button class="add-button" type="link" v-if="!disabled" @click="showModal(1)">
-                                <template #icon><PlusOutlined /></template>
-                                {{$t('updatePromotion.addLocationSegments')}}
-                            </a-button>
-                    </a-col>
-                    <a-col :span="2" style="text-align: center">
-                        <a-divider style="height: 100%" type="vertical" />
-                    </a-col>
-                    <a-col :span="11">
-                        <h4> {{$t('updatePromotion.excludeLocation')}}</h4>
-                        <a-divider style="margin: 10px 0 10px 0" />
-                         <a-row :gutter="16">
-                            <a-col :span="12" v-for="(item, index) in noIncludeList" :key="index" >
-                                 <a-card class="mt10">
-                            <a-row :gutter="16">
-                                <a-col :span="12">
-                                    <div class="inline-block card-title">
-                                        <div class="card-name fl">ID</div>
-                                        <div class="card-desc fl">{{item.segment_id}}</div>
-                                    </div>
-                                </a-col>
-                                <a-col :span="12">
-                                    <div class="inline-block card-title">
-                                        <div class="card-name fl">COUNT#</div>
-                                        <div class="card-desc fl">{{item.sub_count}}</div>
-                                    </div>
-                                </a-col>
-                                <a-col :span="24">
-                                    <div class="inline-block card-title">
-                                        <div class="card-name fl">名称</div>
-                                        <div class="card-desc fl">{{item.name}}</div>
-                                    </div>
-                                </a-col>
-                            </a-row>
-                            <div class="card-delete">
-                                <DeleteOutlined v-if="!disabled" style="color: #d9d9d9" @click="onDelete(index)" class="ml10" />
-                            </div>
-                        </a-card>
-                            </a-col>
-                         </a-row>
-                       
-                        <a-button class="add-button"  type="link" v-if="!disabled" @click="showModal(0)">
+            <a-row>
+                <a-col :span="11">
+                    <h4 class="include-title">
+                        <img src="../../../assets/images/include.svg" />
+                        {{$t('updatePromotion.includesLocation')}}
+                    </h4>
+                    <a-divider style="margin: 10px 0 10px 0" />
+                    <a-row :gutter="16">
+                        <a-col :span="12" v-for="(item, index) in includeList" :key="index" >
+                            <a-card class="mt10">
+                                <a-row :gutter="16">
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">ID</div>
+                                            <div class="card-desc fl">{{item.segment_id}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="12">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">COUNT#</div>
+                                            <div class="card-desc fl">{{item.sub_count}}</div>
+                                        </div>
+                                    </a-col>
+                                    <a-col :span="24">
+                                        <div class="inline-block card-title">
+                                            <div class="card-name fl">名称</div>
+                                            <div class="card-desc fl">{{item.name}}</div>
+                                        </div>
+                                    </a-col>
+                                </a-row>
+                                <div class="card-delete">
+                                        <img src="../../../assets/images/detele.svg" v-if="!disabled" @click="onDelete(1,index)" class="ml10" />
+
+                                </div>
+                            </a-card>
+                        </a-col>
+                        
+                    </a-row>
+                        <a-button class="add-button" type="link" v-if="!disabled" @click="showModal(1)">
                             <template #icon><PlusOutlined /></template>
                             {{$t('updatePromotion.addLocationSegments')}}
                         </a-button>
+                </a-col>
+                <a-col :span="2" style="text-align: center">
+                    <a-divider style="height: 100%" type="vertical" />
+                </a-col>
+                <a-col :span="11">
+                    <h4 class="include-title">
+                        <img src="../../../assets/images/noinclude.svg" />
+                        {{$t('updatePromotion.excludeLocation')}}
+                    </h4>
+                    <a-divider style="margin: 10px 0 10px 0" />
+                        <a-row :gutter="16">
+                        <a-col :span="12" v-for="(item, index) in noIncludeList" :key="index" >
+                                <a-card class="mt10">
+                        <a-row :gutter="16">
+                            <a-col :span="12">
+                                <div class="inline-block card-title">
+                                    <div class="card-name fl">ID</div>
+                                    <div class="card-desc fl">{{item.segment_id}}</div>
+                                </div>
+                            </a-col>
+                            <a-col :span="12">
+                                <div class="inline-block card-title">
+                                    <div class="card-name fl">COUNT#</div>
+                                    <div class="card-desc fl">{{item.sub_count}}</div>
+                                </div>
+                            </a-col>
+                            <a-col :span="24">
+                                <div class="inline-block card-title">
+                                    <div class="card-name fl">名称</div>
+                                    <div class="card-desc fl">{{item.name}}</div>
+                                </div>
+                            </a-col>
+                        </a-row>
+                        <div class="card-delete">
+                            <img src="../../../assets/images/detele.svg" v-if="!disabled" @click="onDelete(0, index)" class="ml10" />
 
-                    </a-col>
-                </a-row>
-            </div>
-             
+                        </div>
+                    </a-card>
+                        </a-col>
+                        </a-row>
+                    
+                    <a-button class="add-button"  type="link" v-if="!disabled" @click="showModal(0)">
+                        <template #icon><PlusOutlined /></template>
+                        {{$t('updatePromotion.addLocationSegments')}}
+                    </a-button>
+
+                </a-col>
+            </a-row>
             <a-modal width="500px" v-model:visible="visible" :title="$t('updatePromotion.addLocationSegments')" @ok="handleOk">
                 <a-divider style="margin: 0 0 20px 0" />
                 <div class="flex">
@@ -130,15 +134,13 @@
                         
                     />
                 </div>
-
             </a-modal>  
         </div>
     </div>
-
 </template>
 
 <script>
-    import { defineComponent, reactive, toRaw, ref, onMounted, defineEmits } from 'vue';
+    import { defineComponent, ref, onMounted, defineEmits } from 'vue';
     import { useRoute } from 'vue-router';
     import { PlusOutlined, MoreOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons-vue';
     import { getSegmentsList } from '@/api/segments'
@@ -197,8 +199,13 @@
                 }
             }
 
-            const onDelete = key => {
-                dataSource.value = dataSource.value.filter(item => item.key !== key);
+            const onDelete = (include1, index) => {
+                if(include1 == 1){
+                    includeList.value = includeList.value.filter((item, num) => index !== num);
+                } else if(include1 == 0){
+                    noIncludeList.value = noIncludeList.value.filter((item, num) => index !== num);
+                }
+                onUpdate()
             };
             const showModal = (include1) => {
                 visible.value = true;

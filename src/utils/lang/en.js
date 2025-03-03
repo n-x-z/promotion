@@ -10,7 +10,12 @@ export default{
         login: 'Login',
         userLogin: 'Login With Username And Password',
         personaCenter: 'Persona Center',
-        logOut: 'Log Out'
+        logOut: 'Log Out',
+        back: 'To Back List',
+        addSuccess: 'Create Success',
+        addFail: 'Create Fail',
+        close: 'Close',
+        stayHere: 'Stay Here'
     },
     menu: {
         promotion: 'Promotion',
@@ -47,6 +52,7 @@ export default{
         placeholderChange: 'Please Select',
         active: 'Active',
         inactive: 'Inactive',
+        inUse: 'In Use',
         all: 'ALL',
         placeholderDetailInput: 'Name/Desc/Person',
         required:'this field is required'

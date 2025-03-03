@@ -14,25 +14,7 @@
                 <menu-unfold-outlined v-if="collapsed" class="trigger" @click="() => (collapsed = !collapsed)"/>
                 <menu-fold-outlined v-else class="trigger" @click="() => (collapsed = !collapsed)" />
                 <div class="user-menu">
-                    <!-- <a-dropdown>
-                        <a class="ant-dropdown-link" @click.prevent>
-                            {{$t('common.personaCenter')}}
-                        </a>
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item>
-                                    <a href="/login">{{$t('common.logOut')}}</a>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                    </a-dropdown> -->
-                    <!-- <a-switch
-                        :checked="theme === 'dark'"
-                        checked-children="Dark"
-                        un-checked-children="Light"
-                        @change="changeTheme"
-                        class="header-theme"
-                    /> -->
+                   
                 </div>
 
             </a-layout-header>
@@ -43,6 +25,7 @@
                             <a-breadcrumb-item v-for="(item, index) in breadcrumbList" :key="index">
                                 <span v-if="!item.path">
                                 {{ $t(`menu.${item.name}`) }}
+                                
                                 </span>
                                 <router-link v-else :to="item.path">
                                     {{ $t(`menu.${item.name}`) }}
@@ -92,11 +75,10 @@
 
         setup() {
             const router = useRoute();
-            let breadcrumbList  = ref([])
             const state = reactive({
                 theme: 'light'
             });
-            breadcrumbList = computed(() => {
+            let breadcrumbList = computed(() => {
                 let matched = router.matched.filter(item => item.name)
                 return matched
             })
@@ -106,7 +88,6 @@
                 return matched
             })
 
-            console.log(router, 'breadcrumbList')
             const changeTheme = (checked) => {
                 state.theme = checked ? 'dark' : 'light';
             };

@@ -6,10 +6,11 @@
 export default defineComponent({
     setup() {
         const colorList = ref([
-          {name: '灰色',color: '#312e2a',menFontColor: '#ffffff'},
-          {name: '黑色',color: '#000000',menFontColor: '#ffffff'},
-          {name: '蓝色',color: '#1677ff',menFontColor: '#1677ff'},
-          {name: '绿色',color: '#00b96b',menFontColor: '#00b96b'},
+          {name: '深灰',color: '#312e2a',menFontColor: '#333333',menBgColor: '#eef0f4'},
+          {name: '浅灰',color: '#9a9da4',menFontColor: '#333333',menBgColor: '#eef0f4'},
+          {name: '黑色',color: '#000000',menFontColor: '#ffffff',menBgColor: '#ffffff'},
+          {name: '蓝色',color: '#1677ff',menFontColor: '#1677ff',menBgColor: '#e6f4ff'},
+          {name: '绿色',color: '#00b96b',menFontColor: '#00b96b',menBgColor: '#e1faeb'},
         ])
         const colorChecked = ref('#312e2a')
         const checked = ref(localStorage.getItem('language') == 'zh');
@@ -32,6 +33,7 @@ export default defineComponent({
             const body = document.querySelector('body');
             body && body.style.setProperty('--theme', colorChecked.value);
             body && body.style.setProperty('--thememenu', getColor(colorChecked.value, 'menFontColor'));
+            body && body.style.setProperty('--thememenubg', getColor(colorChecked.value, 'menBgColor'));
             
         })
 
@@ -40,6 +42,7 @@ export default defineComponent({
             const body = document.querySelector('body');
             body && body.style.setProperty('--theme', e);
             body && body.style.setProperty('--thememenu', getColor(e, 'menFontColor'));
+            body && body.style.setProperty('--thememenubg', getColor(colorChecked.value, 'menBgColor'));
         }
 
         const getColor = (value,name) => {
@@ -86,9 +89,10 @@ export default defineComponent({
         token:{
           colorPrimary: colorChecked, 
           borderRadius: '2px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0)',
           boxShadowBase:'none !important', 
           colorLink: colorChecked, 
-        }
+        },
       }" 
       :locale="!checked ? enUS : zhCN" 
       :getPopupContainer="getPopupContainer"
