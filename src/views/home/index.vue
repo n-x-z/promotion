@@ -11,17 +11,17 @@
             <div class="mt40">
               <a-row :gutter="[16,16]">
                 <a-col :span="8">
-                   <div class="dashboard-title">{{$t('table.NotStarted')}}</div>
+                   <div class="dashboard-title"><a-tag color="blue">{{$t('table.NotStarted')}}</a-tag></div>
                    <div class="dashboard-num font fs20">{{dashboardInfo.Promotion_Count.Not_Started}}</div>
                 </a-col>
                 <a-col :span="8">
                    
-                   <div class="dashboard-title">{{$t('table.InProgress')}}</div>
+                   <div class="dashboard-title"> <a-tag color="green">{{$t('table.InProgress')}}</a-tag></div>
                    <div class="dashboard-num font fs20">{{dashboardInfo.Promotion_Count.In_Progress}}</div>
                 </a-col>
                 <a-col :span="8">
                 
-                   <div class="dashboard-title">{{$t('table.Completed')}}</div>
+                   <div class="dashboard-title"> <a-tag color="default">{{$t('table.Completed')}}</a-tag></div>
                    <div class="dashboard-num font fs20">{{dashboardInfo.Promotion_Count.Completed}}</div>
                 </a-col>
               </a-row>
@@ -88,12 +88,12 @@
                 </a-col>
                 <a-col :span="12">
                   <div class="flex">
-                      <img class="dashboard-icon" src="../../assets/images/jihuo.jpg" />
+                      <img class="dashboard-icon" src="../../assets/images/active.svg" />
                       <div class="dashboard-title" >{{$t('filter.active')}}</div>
                       <div class="dashboard-num font fs16 ml10">{{dashboardInfo.Customer_Segment.Active}}</div>
                   </div>
                   <div class="flex mt20">
-                      <img class="dashboard-icon" src="../../assets/images/use.jpg" />
+                      <img class="dashboard-icon" src="../../assets/images/inuse.svg" />
                       <div class="dashboard-title">{{$t('filter.inUse')}}</div>
                       <div class="dashboard-num font fs16 ml10">{{dashboardInfo.Customer_Segment.In_Use}}</div>
                   </div>
@@ -113,12 +113,12 @@
                 </a-col>
                 <a-col :span="12">
                   <div class="flex">
-                      <img class="dashboard-icon" src="../../assets/images/jihuo.jpg" />
+                      <img class="dashboard-icon" src="../../assets/images/active.svg" />
                       <div class="dashboard-title" >{{$t('filter.active')}}</div>
                       <div class="dashboard-num font fs16 ml10">{{dashboardInfo.Item_Segment.Active}}</div>
                   </div>
                   <div class="flex mt20">
-                      <img class="dashboard-icon" src="../../assets/images/use.jpg" />
+                      <img class="dashboard-icon" src="../../assets/images/inuse.svg" />
                       <div class="dashboard-title">{{$t('filter.inUse')}}</div>
                       <div class="dashboard-num font fs16 ml10">{{dashboardInfo.Item_Segment.In_Use}}</div>
                   </div>
@@ -138,12 +138,12 @@
                 </a-col>
                 <a-col :span="12">
                    <div class="flex">
-                      <img class="dashboard-icon" src="../../assets/images/jihuo.jpg" />
+                      <img class="dashboard-icon" src="../../assets/images/active.svg" />
                       <div class="dashboard-title" >{{$t('filter.active')}}</div>
                       <div class="dashboard-num font fs16 ml10">{{dashboardInfo.Location_Segment.Active}}</div>
                   </div>
                   <div class="flex mt20">
-                      <img class="dashboard-icon" src="../../assets/images/use.jpg" />
+                      <img class="dashboard-icon" src="../../assets/images/inuse.svg" />
                       <div class="dashboard-title">{{$t('filter.inUse')}}</div>
                       <div class="dashboard-num font fs16 ml10">{{dashboardInfo.Location_Segment.In_Use}}</div>
                   </div>
@@ -328,9 +328,9 @@
 
 }
 .dashboard-icon{
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   margin-right: 10px;
-  margin-top: 4px;
+  margin-top: 5px;
 }
 </style>

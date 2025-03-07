@@ -27,14 +27,6 @@
           </a-form>
       </div>
       <div class="body-content">
-          <!-- <div class="flex flex-jcsb">
-              <h3>{{$t('table.promotionList')}}</h3>
-              <a-button type="primary" @click="onAdd">
-                  <template #icon><PlusOutlined /></template>
-                  {{$t('table.addPromotion')}}
-              </a-button>
-          </div> -->
-
           <div >
               <a-table :pagination="false" :loading="loading" :data-source="dataSource" :columns="columns">
                   <template #index="{ index, record }">
@@ -47,10 +39,17 @@
                      <div>{{record.name}}</div>
                      <div class="description">{{record.description}}</div>
                   </template>
+                   <template #type="{ index, record }">
+                     <div class="flex">
+                        {{record.promotion_type}}
+                        <img class="ml5" v-if="record.promotion_type == 'Coupon'" src="../../assets/images/coupon.svg" />
+                    </div>
+                     
+                  </template>
                   <template #time="{ index, record }">
                     <a-tag v-if="record.time_stats == 'Completed'" color="default">{{$t('table.Completed')}}</a-tag>
                     <a-tag v-if="record.time_stats == 'In Progress'" color="green">{{$t('table.InProgress')}}</a-tag>
-                     <a-tag v-if="record.time_stats == 'Not Started'" color="blue">{{$t('table.NotStarted')}}</a-tag>
+                    <a-tag v-if="record.time_stats == 'Not Started'" color="blue">{{$t('table.NotStarted')}}</a-tag>
                      <div>{{record.start_date}}~{{record.end_date}}</div>
                   </template>
                   <template #status="{ index, record }">
@@ -120,9 +119,6 @@
       </div>
 
         <a-modal width="800px" v-model:visible="visible" :maskClosable="false" title="" :closable="false" @ok="handleOk">
-            <!-- <template #footer>
-                <a-button key="submit" type="primary" @click="handleOk">Submit</a-button>
-            </template> -->
             <a-tabs v-model:activeKey="activeKey">
                 <a-tab-pane key="1" :tab="$t('updatePromotion.selectFromPromotionTypes')">
                     <a-row :gutter="16">
@@ -158,10 +154,7 @@
                                 </a-card>
                             </div>
                         </div>
-
                     </div>
-
-
                 </a-tab-pane>
 
             </a-tabs>
@@ -233,6 +226,9 @@
                 {
                     title: t('table.type'),
                     dataIndex: 'promotion_type',
+                    slots: {
+                        customRender: 'type',
+                    },
                 },
                 {
                     title: t('table.startingTime'),
